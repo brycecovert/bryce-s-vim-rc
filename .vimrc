@@ -34,7 +34,6 @@ set nowrap
 let g:fuf_ignoreCase = 0
 let NERDTreeIgnore = ['\.pyc$']
 
-
 " functions
 
 
