@@ -1,0 +1,39 @@
+Index: include/geos/geom/GeometryFactory.h
+===================================================================
+--- include/geos/geom/GeometryFactory.h (revision 3469)
++++ include/geos/geom/GeometryFactory.h (working copy)
+@@ -23,6 +23,10 @@
+ 
+ //#include <geos/geom/CoordinateSequence.h>
+ #include <geos/geom/Geometry.h>
++#include <geos/geom/GeometryCollection.h>
++#include <geos/geom/MultiPolygon.h>
++#include <geos/geom/MultiLineString.h>
++#include <geos/geom/MultiPoint.h>
+ #include <geos/export.h>
+ #include <geos/inline.h>
+ 
+@@ -320,7 +324,7 @@
+ 
+     // for the empty geometry, return an empty GeometryCollection
+     if ( count == 0 ) {
+-      return std::auto_ptr<Geometry>( createGeometryCollection() );
++      return std::auto_ptr<Geometry>( dynamic_cast<Geometry*>(createGeometryCollection()) );
+     }
+ 
+     // for the single geometry, return a clone
+@@ -348,11 +352,11 @@
+ 
+     // At this point we know the collection is not hetereogenous.
+     if ( dynamic_cast<const Polygon*>(*from) ) {
+-      return std::auto_ptr<Geometry>( createMultiPolygon(fromGeoms) );
++      return std::auto_ptr<Geometry>( dynamic_cast<MultiPolygon*>(createMultiPolygon(fromGeoms)) );
+     } else if ( dynamic_cast<const LineString*>(*from) ) {
+-      return std::auto_ptr<Geometry>( createMultiLineString(fromGeoms) );
++      return std::auto_ptr<Geometry>( dynamic_cast<MultiLineString*>(createMultiLineString(fromGeoms)) );
+     } else if ( dynamic_cast<const Point*>(*from) ) {
+-      return std::auto_ptr<Geometry>( createMultiPoint(fromGeoms) );
++      return std::auto_ptr<Geometry>( dynamic_cast<MultiPoint*>(createMultiPoint(fromGeoms)) );
+     }
+     // FIXME: Why not to throw an exception? --mloskot
+     assert(0); // buildGeomtry encountered an unkwnon geometry type
