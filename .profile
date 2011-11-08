@@ -6,3 +6,4 @@ export PS1="\!:\w $ "
 alias mvim="/Applications/MacVim.app/Contents/MacOS/MacVim"
 export PATH=/Users/bryce/.virtualenvs/ddar/bin:$PATH
 [[ -s "/Users/bryce/.rvm/scripts/rvm" ]] && source "/Users/bryce/.rvm/scripts/rvm"  # This loads RVM into a shell session.
+alias ll="ls -la"
