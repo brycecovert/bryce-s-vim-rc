@@ -95,5 +95,11 @@ ${hg_info} \
 %{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"
 
 set -o vi
+bindkey -v
+bindkey \\C-R history-incremental-search-backward
+bindkey \\C-F history-incremental-search-forward
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
+setopt appendhistory
+bindkey '^[[A' up-line-or-search
+bindkey '^[[B' down-line-or-search
