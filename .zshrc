@@ -70,7 +70,7 @@ local current_dir='${PWD/#$HOME/~}'
 
 # Git info.
 local git_info='$(git_prompt_info)'
-local hg_info='$(hg_prompt_info)'
+local hg_info='$(hg prompt "{branch} " 2>/dev/null)'
 ZSH_THEME_GIT_PROMPT_PREFIX=" %{$fg[white]%}on%{$reset_color%} git:%{$fg[cyan]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}x"
@@ -82,7 +82,7 @@ ZSH_THEME_HG_PROMPT_DIRTY=" %{$fg[red]%}x"
 ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg[green]%}o"
 
 # Prompt format: \n # USER at MACHINE in DIRECTORY on git:BRANCH STATE [TIME] \n $ 
-PROMPT="
+precmd() { print -rP "
 %{$terminfo[bold]$fg[blue]%}#%{$reset_color%} \
 %{$fg[cyan]%}%n \
 %{$fg[white]%}at \
@@ -90,9 +90,12 @@ PROMPT="
 %{$fg[white]%}in \
 %{$terminfo[bold]$fg[yellow]%}${current_dir}%{$reset_color%}\
 ${git_info} \
+%{$fg[cyan] %}\
 ${hg_info} \
-%{$fg[white]%}[%*]
-%{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"
+%{$fg[white]%}[%*]"
+}
+
+PROMPT="%{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"
 
 set -o vi
 bindkey -v
@@ -103,3 +106,14 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 setopt appendhistory
 bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
+bindkey '^X^A' fasd-complete
+bindkey '^X^F' fasd-complete-f
+bindkey '^X^D' fasd-complete-d
+
+alias -s log="tail -f"
+
+bindkey -v \\C-e copy-prev-shell-word
+
+setopt autopushd pushdminus pushdsilent pushdtohome
+
+source ~/.zshrc.local
