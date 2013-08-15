@@ -116,4 +116,4 @@ bindkey -v \\C-e copy-prev-shell-word
 
 setopt autopushd pushdminus pushdsilent pushdtohome
 
-source ~/.zshrc.local
+[[ -f ~/.zshrc.local ]] &&  source ~/.zshrc.local
