@@ -111,6 +111,7 @@ bindkey '^X^F' fasd-complete-f
 bindkey '^X^D' fasd-complete-d
 
 alias -s log="tail -f"
+alias dh='dirs -v'
 
 bindkey -v \\C-e copy-prev-shell-word
 
