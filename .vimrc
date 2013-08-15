@@ -140,13 +140,3 @@ nnoremap k gk
 let g:easytags_updatetime_autodisable=0
 let g:easytags_on_cursorhold = 0
 
-autocmd FileType python let b:easytags_auto_highlight = 0
-
-let g:SuperTabDefaultCompletionType = "context"
-
-python activate_this = '/Users/bryce/.virtualenvs/env/bin/activate_this.py'
-python execfile(activate_this, dict(__file__=activate_this))
-python import os
-python os.environ['DJANGO_SETTINGS_MODULE']='settings'
-python import sys
-python sys.path.append("/Users/bryce/dev/mainrepo/projects/PortlandSite/src/")

@@ -1,7 +1,0 @@
-[extensions]
-reviewboard = /Users/bryce/dev/mercurial-reviewboard/
-
-[reviewboard]
-server = https://rb.evoworx.org
-user = bryce
-target_groups = dev
