@@ -110,6 +110,7 @@ bindkey '^[[B' history-beginning-search-forward
 bindkey '^X^A' fasd-complete
 bindkey '^X^F' fasd-complete-f
 bindkey '^X^D' fasd-complete-d
+bindkey '^w' backward-kill-word
 
 alias -s log="tail -f"
 alias dh='dirs -v'
