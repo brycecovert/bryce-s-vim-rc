@@ -31,7 +31,6 @@ set cursorline
 set nofoldenable
 set hidden
 set nowrap
-let g:fuf_ignoreCase = 0
 let NERDTreeIgnore = ['\.pyc$']
 
 " functions
@@ -39,7 +38,6 @@ let NERDTreeIgnore = ['\.pyc$']
 
 " mappings
 map <F4> :execute "Ack \"" . expand("<cword>") . "\"" <CR>
-let g:fuf_file_exclude = '\v\~$|\.(o|exe|dll|bak|swp|class)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
 
 " syntax mappings
 "motion mappings
@@ -74,9 +72,6 @@ map <silent> <C-E> <Leader>be
 nmap <F7> :execute "Ack " . expand("<cword>") <cr>
 vmap <F7> :execute "Ack " . expand("<cword>") <cr>
 
-map <silent> <F8> :TlistToggle<CR>
-
-
 map <C-S> :wa<CR>
 map <Leader>o <Leader>t expand("<cword>")
 map <Leader>lp :lprev <CR>
@@ -86,13 +81,9 @@ map <Leader>cn :cn <CR>
 map <Leader>yf :let @*=expand("%") <CR>
 map <leader>ss :setlocal spell!<cr>
 map <Leader>qd : <CR>
-map <Leader>g :FufTag<CR>
-nnoremap <silent> <leader>p :YRShow<CR>
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
-map <Leader>u :syntax off<CR>:UpdateTags<CR>:syntax on<CR>
 map <Leader>f :NERDTreeFind<CR>
-map <Leader>i :RopeAutoImport<CR>
 
 " imap <C-H> <C-X><C-U>
 vmap <C-W> i}
@@ -101,20 +92,6 @@ vmap <C-W> i}
 set diffopt+=iwhite
 nnoremap ; :
 
-" omni complete
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType javascript set shiftwidth=2
-autocmd FileType javascript set tabstop=2
-autocmd FileType python set shiftwidth=4
-autocmd FileType python set tabstop=4
-autocmd FileType html set shiftwidth=2
-autocmd FileType html set tabstop=2
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-call pathogen#infect()
-let g:DirDiffDynamicDiffText = 1
-
 " autocmd BufWritePost *.py
       " \ if filereadable('tags') |
       " \   call system('ctags -a '.expand('%')) |
@@ -122,21 +99,12 @@ let g:DirDiffDynamicDiffText = 1
 set wildignore+=*.o,*.obj,.git,*.pyc
 
 map <F1> <Esc>
-function! ReloadSnippets( snippets_dir, ft )
-    if strlen( a:ft ) == 0
-        let filetype = "_"
-    else
-        let filetype = a:ft
-    endif
 
-    call ResetSnippets()
-    call GetSnippets( a:snippets_dir, filetype )
-endfunction
-
-nmap <Leader>rr :call ReloadSnippets(snippets_dir, &filetype)<CR>
 
 nnoremap j gj
 nnoremap k gk
-let g:easytags_updatetime_autodisable=0
-let g:easytags_on_cursorhold = 0
+
+" always stop words on - and _
+set iskeyword-=_
+set iskeyword-=-
 

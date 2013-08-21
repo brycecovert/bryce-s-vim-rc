@@ -103,9 +103,10 @@ bindkey \\C-R history-incremental-search-backward
 bindkey \\C-F history-incremental-search-forward
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
+
 setopt appendhistory
-bindkey '^[[A' up-line-or-search
-bindkey '^[[B' down-line-or-search
+bindkey '^[[A' history-beginning-search-backward
+bindkey '^[[B' history-beginning-search-forward
 bindkey '^X^A' fasd-complete
 bindkey '^X^F' fasd-complete-f
 bindkey '^X^D' fasd-complete-d
