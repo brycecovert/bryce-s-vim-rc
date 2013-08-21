@@ -1,3 +1,4 @@
+execute pathogen#infect()
 colorscheme desert
 set number
 set incsearch
