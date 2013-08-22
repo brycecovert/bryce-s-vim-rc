@@ -3,9 +3,13 @@
 # colors
 # promptinit
 
+export EDITOR=vim
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 ZSH_CUSTOM=$HOME/.zsh_custom
+
+# for tmux
+export DISABLE_AUTO_TITLE=true
 #
 # # Set name of the theme to load.
 # # Look in ~/.oh-my-zsh/themes/

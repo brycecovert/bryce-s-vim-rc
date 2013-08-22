@@ -105,7 +105,6 @@ map <F1> <Esc>
 nnoremap j gj
 nnoremap k gk
 
-" always stop words on - and _
-set iskeyword-=_
+" always stop words on -
 set iskeyword-=-
 
