@@ -3,4 +3,5 @@ syntax: glob
 var
 *.orig
 *.ropeproject
+workbench.xmi
 
