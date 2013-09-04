@@ -108,3 +108,4 @@ nnoremap k gk
 " always stop words on -
 set iskeyword-=-
 
+au FileType ruby set sw=2 sts=2 
