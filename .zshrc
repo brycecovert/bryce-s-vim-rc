@@ -115,6 +115,7 @@ bindkey '^X^A' fasd-complete
 bindkey '^X^F' fasd-complete-f
 bindkey '^X^D' fasd-complete-d
 bindkey '^w' backward-kill-word
+bindkey '^?' backward-delete-char
 
 alias -s log="tail -f"
 alias dh='dirs -v'
