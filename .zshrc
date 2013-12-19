@@ -103,10 +103,10 @@ PROMPT="%{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"
 
 set -o vi
 bindkey -v
-bindkey \\C-R history-incremental-search-backward
 bindkey \\C-F history-incremental-search-forward
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
+source ~/zaw/zaw.zsh
 
 setopt appendhistory
 bindkey '^[[A' history-beginning-search-backward
@@ -121,6 +121,7 @@ alias -s log="tail -f"
 alias dh='dirs -v'
 
 bindkey -v \\C-e copy-prev-shell-word
+bindkey \\C-R zaw-history
 
 setopt autopushd pushdminus pushdsilent pushdtohome
 
