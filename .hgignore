@@ -4,4 +4,5 @@ var
 *.orig
 *.ropeproject
 workbench.xmi
+**/settings_local.py
 

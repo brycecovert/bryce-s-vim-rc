@@ -109,6 +109,7 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 source ~/zaw/zaw.zsh
 
 setopt appendhistory
+setopt hist_ignore_all_dups
 bindkey '^[[A' history-beginning-search-backward
 bindkey '^[[B' history-beginning-search-forward
 bindkey '^X^A' fasd-complete
@@ -122,7 +123,11 @@ alias dh='dirs -v'
 
 bindkey -v \\C-e copy-prev-shell-word
 bindkey \\C-R zaw-history
+bindkey \\C-B zaw-git-branches
 
 setopt autopushd pushdminus pushdsilent pushdtohome
 
 [[ -f ~/.zshrc.local ]] &&  source ~/.zshrc.local
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
