@@ -1,0 +1,26 @@
+(ns outpace.reporting-service.db.job-event-test
+  (:require [clojure.test :refer :all]
+            [outpace.reporting-service.test-util :refer :all]
+            [outpace.reporting-service.db.bundle-profile :as bundle-profile]
+            [outpace.reporting-service.db.job :as job]
+            [outpace.reporting-service.db.job-event :refer :all]
+            [clojure.java.jdbc :as sql]
+            [schema.test :as st]
+            [clj-time.core :as time]
+            [clj-time.local :as local]
+            [clojure.set :as set]))
+
+
+(use-fixtures :each roll-back st/validate-schemas)
+
+;; Testing profile jobs
+(deftest ^:integration store-job-event-test
+
+  (let [data-source (create (test-data-source))]
+
+    (testing "it should have an id after storing"
+      (is (not (nil? (:id data-source)))))
+
+    (testing "it should store all fields"
+      (is (= data-source (find-by-id (:id data-source)))))))
+

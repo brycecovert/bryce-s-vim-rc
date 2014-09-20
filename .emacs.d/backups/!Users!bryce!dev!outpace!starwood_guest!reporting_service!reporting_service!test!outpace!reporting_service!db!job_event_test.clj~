@@ -1,0 +1,68 @@
+(ns outpace.reporting-service.db.job-event-test
+  (:require [clojure.test :refer :all]
+            [outpace.reporting-service.test-util :refer :all]
+            [outpace.reporting-service.db.bundle-profile :as bundle-profile]
+            [outpace.reporting-service.db.job-event :refer :all]
+            [outpace.reporting-service.db.job-event :as job-event]
+            [clojure.java.jdbc :as sql]
+            [schema.test :as st]
+            [clj-time.core :as time]
+            [clj-time.local :as local]))
+
+
+(use-fixtures :each roll-back st/validate-schemas)
+
+;; Testing profile jobs
+(deftest ^:integration store-job-test
+
+  (let [bundle (bundle-profile/create (test-bundle-profile))
+        job (create (test-profile-job {:bundle-profile-id (:id bundle)}))]
+
+    (testing "it should have an id after storing"
+      (is (not (nil? (:id job)))))
+
+    (testing "it should create report bundle profiles"
+      (is (= job (find-by-id (:id job)))))
+
+    (testing "it should have the same date that was stored"
+      (is (= (:start-timestamp job) (:start-timestamp (find-by-id (:id job))))))))
+
+
+(deftest ^:integration fetch-uncompleted-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should find a job that's not completed"
+      (let [job (create (test-profile-job {:status "created"  :bundle-profile-id (:id bundle)}))
+            uncompleted-job (find-and-reserve-uncompleted)
+            job (find-by-id (:id job))]
+        (is (= (:id job) (:id uncompleted-job)))
+        (is (= "started" (:status uncompleted-job)))))))
+
+(deftest ^:integration find-uncompleted-job-shouldnt-find-a-completed-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it shouldn't find a job that's completed"
+      (let [job (create (test-profile-job {:status "succeeded"  :bundle-profile-id (:id bundle)}))]
+        (is (nil? (find-and-reserve-uncompleted)))))))
+
+(deftest ^:integration transition-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should transition a job when valid"
+      (let [job (create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (start job)
+        (is (= "started" (:status (find-by-id (:id job)))))
+        (is (seq (job-event/find-by-job-id (:id job))))))
+    (testing "it should not transition a job when invalid"
+      (let [job (create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (is (thrown? IllegalStateException (transition (:id job) #"succeed" (time/now) #{"started"} "succeeded")))))))
+
+(deftest ^:integration job-workflow-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should walk through each stage."
+      (let [job (create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (start job)
+        (generate job)
+        (succeed job)
+        (let [result (find-by-id (:id job))]
+          (is (= "succeeded" (:status result)))
+          (is (= ["create" "start" "generate" "succeed"] (map :event (job-event/find-by-job-id (:id result)))))
+          (doseq [timestamp [:create-timestamp :start-timestamp :complete-timestamp ] ]
+            (is (not (nil? (timestamp result))))))))))

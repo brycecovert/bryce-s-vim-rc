@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ssh -L21050:localhost:21050 -f hadoop@hadoop.prod.outpace.com -N
+ssh -L7998:localhost:7999 -f -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@prod-starwood.outpace.com -N

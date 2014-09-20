@@ -1,0 +1,10 @@
+(ns advent.core.desktop-launcher
+  (:require [advent.core :refer :all])
+  (:import [com.badlogic.gdx.backends.lwjgl LwjglApplication]
+           [org.lwjgl.input Keyboard])
+  (:gen-class))
+
+(defn -main
+  []
+  (LwjglApplication. advent "advent" 800 600)
+  (Keyboard/enableRepeatEvents true))

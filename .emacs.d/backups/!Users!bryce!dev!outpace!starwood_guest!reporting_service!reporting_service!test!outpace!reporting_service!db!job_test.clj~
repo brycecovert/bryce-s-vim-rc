@@ -1,0 +1,131 @@
+(ns outpace.reporting-service.db.job-test
+  (:require [clojure.test :refer :all]
+            [outpace.reporting-service.db :refer :all]
+            [outpace.reporting-service.db.bundle-profile :as bundle-profile]
+            [outpace.reporting-service.db.data-source :as data-source]
+            [outpace.reporting-service.db.bundle-report :as bundle-report]
+            [outpace.reporting-service.db.job :as job]
+            [outpace.reporting-service.db.job-event :as job-event]
+            [outpace.reporting-service.db.report :as report]
+            [clojure.java.jdbc :as sql]
+            [schema.test :as st]
+            [clj-time.core :as time]
+            [clj-time.local :as local]))
+
+
+(defn seed-database
+  "Seeds a local development database with records that make it
+  possible to hit the reporting service from a REPL or with curl."
+  []
+  (with-transaction
+    (data-source/create {:id "test-data-source"
+                         :name "test-data-source"
+                         :uri "http://localhost:3900/analytics/sop-home-runs-report"
+                         :metadata-uri "http://localhost:3900/analytics/sop-home-runs-metadata"})
+    (report/create {:id "test-report"
+                    :title "SOP Home Runs Report"
+                    :data-source-id "test-data-source"
+                    :columns [:offer-description
+                              :tier
+                              :times-above-average
+                              :offer-name
+                              :property-id
+                              :brand]
+                    :column-specs {:offer-description {:width 50, :header "Offer Description"}
+                                   :tier {:header {:value "Performance Tier"
+                                                   :comment {:text "Home run: Above 2x Property Average Conversion Rate\nBase hit: Above Property Average Conversion Rate\nStrikeout: Below Property Average Conversion Rate\nInsufficient Data: Minimum performance data threshold not yet reached"
+                                                             :width 3
+                                                             :height 5}}}
+                                   :times-above-average {:header "Times Above Average\nConversion Rate"
+                                                         :format :single-decimal}
+                                   :offer-name {:header "Offer Name"}
+                                   :property-id {:width 20, :header "Property Id", :format :general}
+                                   :brand {:width 20, :header "Brand", :format :general}}
+                    :params {}})
+    (bundle-profile/create {:id "test-bundle-profile"
+                            :name "SOP Reports"
+                            :subject "A subject!"
+                            :body "A body!"
+                            :recurrence "weekly"})
+    (bundle-profile/add-distributions "test-bundle-profile" ["test-reports@outpace.com"])
+    (bundle-report/create {:bundle-profile-id "test-bundle-profile" :report-id "test-report" :sort-order 1})))
+
+
+(defn roll-back [f]
+  (with-transaction
+    (sql/db-set-rollback-only! *db-connection*)
+    (f)))
+
+(use-fixtures :each roll-back st/validate-schemas)
+
+(defn test-data-source [& [data-source]]
+  (merge {:name "Some data source" :uri "http://foo.com" :metadata-uri "http://bar.com"} data-source))
+
+(defn test-report [& [report]]
+  (merge {:title "A report" :columns [:column1] :column-specs {:column1 :abc} :params {}} report))
+
+(defn test-bundle-profile [& [bundle-profile]]
+  (merge {:recurrence "monthly" :name "A Report Bundle" :subject "A test subject" :body "A test body"}))
+
+(defn test-profile-job [& [job]]
+  (merge {:email-address "an@email.com"
+          :status "created"
+          :params {}
+          :start-timestamp (time/date-time 2012 11 4)
+          :complete-timestamp (time/date-time 2013 11 4)}
+         job))
+
+;; Testing profile jobs
+(deftest ^:integration store-job-test
+
+  (let [bundle (bundle-profile/create (test-bundle-profile))
+        job (job/create (test-profile-job {:bundle-profile-id (:id bundle)}))]
+
+    (testing "it should have an id after storing"
+      (is (not (nil? (:id job)))))
+
+    (testing "it should create report bundle profiles"
+      (is (= job (job/find-by-id (:id job)))))
+
+    (testing "it should have the same date that was stored"
+      (is (= (:start-timestamp job) (:start-timestamp (job/find-by-id (:id job))))))))
+
+
+(deftest ^:integration fetch-uncompleted-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should find a job that's not completed"
+      (let [job (job/create (test-profile-job {:status "created"  :bundle-profile-id (:id bundle)}))
+            uncompleted-job (job/find-and-reserve-uncompleted)
+            job (job/find-by-id (:id job))]
+        (is (= (:id job) (:id uncompleted-job)))
+        (is (= "started" (:status uncompleted-job)))))))
+
+(deftest ^:integration find-uncompleted-job-shouldnt-find-a-completed-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it shouldn't find a job that's completed"
+      (let [job (job/create (test-profile-job {:status "succeeded"  :bundle-profile-id (:id bundle)}))]
+        (is (nil? (job/find-and-reserve-uncompleted)))))))
+
+(deftest ^:integration transition-job-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should transition a job when valid"
+      (let [job (job/create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (job/start job)
+        (is (= "started" (:status (job/find-by-id (:id job)))))
+        (is (seq (job-event/find-by-job-id (:id job))))))
+    (testing "it should not transition a job when invalid"
+      (let [job (job/create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (is (thrown? IllegalStateException (job/transition (:id job) #"succeed" (time/now) #{"started"} "succeeded")))))))
+
+(deftest ^:integration job-workflow-test
+  (let [bundle (bundle-profile/create (test-bundle-profile))]
+    (testing "it should walk through each stage."
+      (let [job (job/create (test-profile-job {:status "created" :bundle-profile-id (:id bundle)}))]
+        (job/start job)
+        (job/generate job)
+        (job/succeed job)
+        (let [result (job/find-by-id (:id job))]
+          (is (= "succeeded" (:status result)))
+          (is (= ["create" "start" "generate" "succeed"] (map :event (job-event/find-by-job-id (:id result)))))
+          (doseq [timestamp [:create-timestamp :start-timestamp :complete-timestamp ] ]
+            (is (not (nil? (timestamp result))))))))))

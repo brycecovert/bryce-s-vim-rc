@@ -1,0 +1,42 @@
+(ns loan_calc.core 
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
+            [cljs-http.client :as http]
+            [cljs.core.async :refer [put! <! >! chan timeout]]
+            ))
+
+(def app-state (atom {:monthly nil :payments 360 :amount 340000 :interest 0.03 :fetch (chan)}))
+
+(defn handle-change [e app state-key]
+    (om/transact! app state-key #(.. e -target -value)))
+
+(defn make-field [fetch app f ]
+    (dom/input #js {:type "text" :placeholder (str f) :value (f app) :onChange #(handle-change % app f) :onBlur #(put! fetch {})}))
+
+(defn widget [app owner] 
+    (reify
+        om/IInitState
+        (init-state [_] {:fetch (chan)})
+        om/IWillMount
+        (will-mount [_]
+            (let [fetch (om/get-state owner :fetch)]
+                (go (
+                    (while true
+                    (let [
+                        {:keys [amount payments interest]} @(om/get-props owner)
+                        {resp :body} (<! (http/get (str "/calc?amount=" amount "&payments=" payments "&interest=" interest)))]
+                        (om/transact! app :monthly #(:monthly resp))
+                        (<! fetch)))))))
+        om/IRenderState
+        (render-state [this {fetch :fetch}]
+            (apply dom/div (flatten [nil 
+            (map (partial make-field fetch app)
+                [:payments :amount :interest])
+            (if (:monthly app)
+                (dom/h3 nil (str "Monthly payments will be " (->> (:monthly app) (format "%.2f")) )))])))))
+
+(om/root
+  widget
+  app-state
+  {:target (. js/document (getElementById "app"))})

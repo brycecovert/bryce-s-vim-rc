@@ -1,0 +1,36 @@
+(ns advent.actions)
+
+(defn walk-to-fn [[target-x target-y] target-id]
+  (fn [screen entities]
+    (let [{from-x :x from-y :y :keys [left right anim] :as target-entity} (entities target-id)]
+      (let [delta-x (- target-x from-x)
+            delta-y (- target-y from-y)
+            mag (Math/sqrt (+ (* delta-x delta-x) (* delta-y delta-y)))
+            moved-x (* 1.5 (/ delta-x mag))
+            moved-y (* 1.5 (/ delta-y mag))]
+        (if (< mag 1)
+          (assoc entities target-id (assoc target-entity :actions (rest (:actions target-entity)) :anim nil))
+          (assoc entities target-id
+                 (assoc (jump-to screen entities target-entity [(+ moved-x from-x) (+ moved-y from-y)])
+                   :anim (if (< moved-x 0) left right))))))))
+
+(defn stop-fn [target-id]
+  (fn [screen entities]
+    (let [target (target-id entities)]
+      (assoc-in entities [target-id] (merge target
+                                            {:anim nil
+                                             :actions (rest (:actions target))}
+                                            (when (:anim target)
+                                              (texture (animation! (:anim target) :get-key-frame 0.25))))))))
+
+(defn path-to-actions [screen entities target-id [x y]]
+  (let [entity (target-id entities)
+        path (vec (take-nth 2 (advent.pathfind/visit-all
+                               (:collision (:background entities))
+                               [(int (:x entity)) (int (:y entity))]
+                               [(int x) (int y)])))
+        actions (when (seq path)
+                  (conj
+                   (vec (map #(walk-to-fn % target-id) (conj path [x y])))
+                   (stop-fn target-id)))]
+    actions))

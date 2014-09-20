@@ -1,0 +1,85 @@
+(ns advent.pathfind
+  (:require [play-clj.core :refer :all]
+            [play-clj.ui :refer :all]
+            [play-clj.utils :refer :all]
+            [play-clj.g2d :refer :all]
+            [clojure.pprint])
+  (:import [com.badlogic.gdx.files FileHandle]
+           [com.badlogic.gdx Files]
+           [com.badlogic.gdx.graphics Camera Color GL20 OrthographicCamera
+            PerspectiveCamera Pixmap Pixmap$Format PixmapIO Texture
+            VertexAttributes$Usage]))
+
+(defn printmap [my-map & [skip]]
+  (let [skip (or skip 0)]
+    (doseq [row (take-nth skip my-map)]
+      (println (take-nth skip (map {0 \space 1 "W" "X" "X" "." "."} row))))))
+
+(defn random-map [] (-> (vec (take (/ 240 2) (repeatedly (fn [] (vec (take (/ 320 2) (repeatedly  (fn [] (rand-nth [0  0  1 ])))))))))
+                        (update-in [1 1] (constantly 0))
+                        (update-in [50 50] (constantly 0))))
+
+
+(defn neighbors [x y my-map]
+  (let [candidates [[(dec x) (dec y)] [x (dec y)] [(inc x) (dec y)]
+                    [(dec x) y]                   [(inc x) y]
+                    [(dec x) (inc y)] [x (inc y)] [(inc x) (inc y)]]]
+    (remove #(= 1 (get-in my-map (reverse %)))
+            (filter (fn [[x y]] (and (< -1 x (count (first my-map)))
+                                    (< -1 y (count my-map)))) candidates))))
+
+
+(defn resolve [came-from play-loc target-loc]
+  (loop [path []
+         current-node target-loc]
+    (if (or (= current-node play-loc)
+            (nil? current-node))
+      (reverse (conj path current-node))
+      (recur
+       (conj path current-node)
+       (came-from current-node)))))
+
+(defn visit-all [my-map play-loc target-loc ]
+  (let [visited-map (atom my-map)]
+    (if (= 1 (get-in my-map (reverse target-loc)))
+      nil
+      (loop [came-from {}
+             fronteir [play-loc]]
+        (let [[current-x current-y] (first fronteir)]
+          #_(printmap @visited-map)
+          (if (or (empty? fronteir)
+                  (= [current-x current-y] target-loc))
+            (if (nil? (came-from target-loc))
+              nil
+              (resolve came-from play-loc target-loc))
+            (let [neighbors (neighbors current-x current-y my-map)
+                  [came-from fronteir] (reduce (fn [[came-from fronteir] neighbor]
+                                                 (if (came-from neighbor)
+                                                   [came-from (vec fronteir)]
+                                                   [(assoc came-from neighbor [current-x current-y])
+                                                    (vec (conj fronteir neighbor))]))
+                                               [came-from fronteir]
+                                               neighbors)]
+
+              (swap! visited-map #(update-in % [current-y current-x] (constantly ".")))
+              (printmap @visited-map)
+              (recur came-from (rest fronteir)))))))))
+
+
+(defn print-resolved [path my-map]
+  (doseq [row (reduce (fn [acc path]
+                        (if path
+                          (update-in acc (reverse path) (constantly "X"))
+                          acc))
+                my-map
+                path)]
+    
+    (println (map {0 \space 1 "W" "X" "X"} row)))
+  nil)
+
+(defn map-from-resource [filename]
+  (let [pm (pixmap filename)]
+    (vec (for [y (reverse (range (pixmap! pm :get-height)))]
+           (vec (for [x (range (pixmap! pm :get-width))]
+                  (if (color! (color (pixmap! pm :get-pixel x y)) :equals (color 0 0 0 255))
+                    1 0)))))))

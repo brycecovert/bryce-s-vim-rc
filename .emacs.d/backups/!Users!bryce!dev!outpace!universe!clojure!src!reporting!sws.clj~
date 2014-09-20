@@ -1,0 +1,12 @@
+(defn system-wide-summary-report
+  [database-url start-date end-date]
+  (schema.core/with-fn-validation
+    (let [rows (for [count (events/system-wide-summary-count database-url start-date (shift-end-date end-date))
+                     :let [in-test-group (common/control-group->test-group count)]]
+                 (assoc (dissoc count :is_control_group)
+                   :channel "promotion"
+                   :language "EN_US"
+                   :in-test-group in-test-group))]
+      [{:name "1) SWS"
+        :title-rows (roux-op/title-rows "System Wide Summary" start-date end-date)
+        :data (roux-op/system-wide-summary-report rows common/rate-specs common/funnel false)}])))

@@ -1,0 +1,6 @@
+(ns outpace.roux.test-generators
+  (:require [clojure.test.check.generators :as gen]))
+
+(def channel
+  "Include the non-test-group channels, and some others"
+  (gen/elements ["SOP" "CCC" "Wardrobe" "Boogers"])) 

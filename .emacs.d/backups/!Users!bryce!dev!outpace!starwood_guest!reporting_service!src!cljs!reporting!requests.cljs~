@@ -1,0 +1,32 @@
+(defn get-cookie [name]
+  (js/decodeURIComponent (.get (Cookies. js/document) name)))
+
+(defn authenticated? []
+  (get-cookie "secretKey"))
+
+(defn fetch-secret-key []
+  (get-cookie "secretKey"))
+
+(defn calculate-checksum [params]
+  (let [token (fetch-secret-key)
+        sorted-params (sort-by first params)
+        string-fn (fn [[k v]] (str (name k) "=" v))
+        params-as-str (map string-fn sorted-params)
+        params-str (str/join "&" params-as-str)]
+    (.HmacSHA1 js/CryptoJS params-str token)))
+
+(defn post-with-auth [url {:keys [query-params] :as options}]
+  (let [secret-key (fetch-secret-key)]
+    (http/post url (merge {:headers {"user" (get-cookie "username")
+                                     "checksum" (calculate-checksum query-params)}}
+                          options))))
+
+(defn get-with-auth [url {:keys [query-params] :as options}]
+  (let [secret-key (fetch-secret-key)]
+    (http/get url (merge {:headers {"user" (get-cookie "username")
+                                    "checksum" (calculate-checksum query-params)}}
+                         options))))
+
+(defn redirect-to-auth []
+  (set! js/document.location (str "/authentication/login?redirectTo=" (js/encodeURIComponent js/document.location))))
+

@@ -1,0 +1,46 @@
+<html ><head>
+    <title>Offers UI</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css" media="all">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+  <style type="text/css"></style></head>
+  <body style="">
+    <div id="view" >
+    <nav class="navbar navbar-default " role="navigation">      
+    <div class="container">        <!-- ui-bootstrap-0.5.0 has a bug with collapse when using Bootstrap 3.0.0, it will be fixed in the next release of ui-bootstrap -->        
+    <div class="navbar-header">          
+    <button type="button" class="navbar-toggle">            
+    <span class="sr-only">Toggle navigation</span>            
+    <span class="icon-bar"></span>            
+    <span class="icon-bar"></span>            
+    <span class="icon-bar"></span>          
+    </button>          
+    <a class="navbar-brand" href="#">Offer Management Tool</a>        
+    </div>        
+    <div class="navbar-collapse navbar-ex1-collapse collapse" collapse="isCollapsed" style="height: auto;">          
+    <ul class="nav navbar-nav">            
+    <li>              
+    <a href="#/offer/list" >Offers</a>            
+    </li>
+    <li>
+    <a href="#/attributes/list" >Attribute Tags</a>            
+    </li>
+    <li>              
+    <a href="#/drivers" >Drivers</a>            
+    </li>
+    <li>
+    <a href="#/propensity_override_rules/list">Advanced Logic</a>            
+    </li>
+    <li>
+    <a href="http://wwww.google.com">Reporting</a>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </nav>
+    <script type="text/javascript" src="/js/tools/d3.v2.js"></script>
+    <script src="/js/tools/hmac-sha1.js"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
+</body>
+</html>

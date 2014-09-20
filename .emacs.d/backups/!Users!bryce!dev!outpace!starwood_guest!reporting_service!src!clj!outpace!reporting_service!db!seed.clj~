@@ -1,0 +1,118 @@
+(ns outpace.reporting-service.db.seed
+  (:require [clojure.test :refer :all]
+            [outpace.reporting-service.db :refer :all]
+            [outpace.reporting-service.db.bundle-profile :as bundle-profile]
+            [outpace.reporting-service.db.data-source :as data-source]
+            [outpace.reporting-service.db.bundle-report :as bundle-report]
+            [outpace.reporting-service.db.job :as job]
+            [outpace.reporting-service.db.job-event :as job-event]
+            [outpace.reporting-service.db.report :as report]
+            [ring.adapter.jetty :as jetty]
+            [clojure.java.jdbc :as sql]
+            [schema.test :as st]
+            [clj-time.core :as time]
+            [clj-time.local :as local]))
+
+(defn seed-with-reports
+  "Seeds a local development database with records that make it
+  possible to hit the reporting service from a REPL or with curl."
+  [{:keys [host]}]
+  (with-transaction
+    (data-source/create {:id "pso-data-source"
+                         :name "PSO Data Source"
+                         :uri (str host "/pso-report")
+                         :metadata-uri (str host "/pso-metadata")})
+
+    (report/create {:id "pso-spg-english-carousel-report"
+                    :title "PSO SPG.com English Carousel"
+                    :data-source-id "pso-data-source"
+                    :columns [[nil (:offer-id :offer-name :attributes)]
+                              ["ALL" (:all-show :all-click :all-converted)]
+                              ["TEST" (:test-show :test-click :test-converted)]
+                              ["CONTROL" (:control-show :control-click :control-converted)]
+                              ["UNKNOWN" (:unknown-show :unknown-click :unknown-converted)]
+                              ["CLICK THROUGH RATE"
+                               [:test-show-test-click-rate
+                                :control-show-control-click-rate
+                                :unknown-show-unknown-click-rate
+                                :show-click-rate-lift
+                                :show-click-rate-confidence]]
+                              ["CONVERSION RATE"
+                               [:test-show-test-converted-rate
+                                :control-show-control-converted-rate
+                                :unknown-show-unknown-converted-rate
+                                :show-converted-rate-lift
+                                :show-converted-rate-confidence]]
+                              ["REVENUE"
+                               [:test-bookings
+                                :bookings
+                                :unknown-bookings
+                                :test-bookings-per-conversion
+                                :bookings-per-conversion
+                                :unknown-bookings-per-conversion
+                                :bookings-per-conversion-lift
+                                :test-bookings-per-show
+                                :bookings-per-show
+                                :unknown-bookings-per-show
+                                :bookings-per-show-lift]]] 
+                    :column-specs {:show-click-rate-confidence {:header "Confidence", :format :rounded-percentage},
+                                   :show-click-rate {:header "Rate", :format :percentage},
+                                   :show-converted-rate-confidence {:header "Confidence", :format :rounded-percentage},
+                                   :unknown-bookings-per-conversion {:width 17,
+                                                                     :header "Unknown Revenue\nper Conversion",
+                                                                     :format :dollars-and-cents},
+                                   :show-converted-rate-lift {:header "Lift", :format :rounded-percentage},
+                                   :bookings {:header "Control\nRevenue", :format :dollars},
+                                   :all-converted {:format :number, :header "Conversions"},
+                                   :control-click {:format :number, :header "Clicks"},
+                                   :unknown-bookings {:header "Unknown\nRevenue", :format :dollars},
+                                   :unknown-converted {:format :number, :header "Conversions"},
+                                   :test-bookings-per-conversion {:width 17,:header "Test Revenue\nper Conversion",:format :dollars-and-cents},
+                                   :test-bookings {:header "Test\nRevenue", :format :dollars},
+                                   :converted {:format :number, :header "Conversions"},
+                                   :control-show {:format :number, :header "Impressions"},
+                                   :show-click-rate-lift {:header "Lift", :format :rounded-percentage},
+                                   :month {:width 9, :header "Month"},
+                                   :channel {:header "Channel"},
+                                   :bookings-per-show {:width 17,:header "Control Revenue\nper Show",:format :dollars-and-cents},
+                                   :show-converted-rate {:header "Rate", :format :percentage},
+                                   :control-show-control-converted-rate
+                                   {:header "Control", :format :percentage},
+                                   :unknown-bookings-per-show {:width 17,
+                                                               :header "Unknown Revenue\nper Show",
+                                                               :format :dollars-and-cents},
+                                   :test-converted {:format :number, :header "Conversions"},
+                                   :unknown-click {:format :number, :header "Clicks"},
+                                   :bookings-per-conversion {:width 17,
+                                                             :header "Control Revenue\nper Conversion",
+                                                             :format :dollars-and-cents},
+                                   :all-click {:format :number, :header "Clicks"},
+                                   :click {:format :number, :header "Clicks"},
+                                   :unknown-show {:format :number, :header "Impressions"},
+                                   :offer-id {:width 25, :header "Offer Id"},
+                                   :unknown-show-unknown-click-rate {:header "Unknown", :format :percentage},
+                                   :bookings-per-conversion-lift {:header "Revenue Per Conversion Lift", :format :percentage},
+                                   :test-bookings-per-show {:width 17,
+                                                            :header "Test Revenue\nper Show",
+                                                            :format :dollars-and-cents},
+                                   :test-show {:format :number, :header "Impressions"},
+                                   :test-show-test-click-rate {:width 12, :header "Test", :format :percentage},
+                                   :control-show-control-click-rate {:header "Control", :format :percentage},
+                                   :all-show {:format :number, :header "Impressions"},
+                                   :offer-name {:header "Offer Name (Title)"},
+                                   :attributes {:width 25, :header "Attributes"},
+                                   :test-click {:format :number, :header "Clicks"},
+                                   :control-converted {:format :number, :header "Conversions"},
+                                   :unknown-show-unknown-converted-rate {:header "Unknown", :format :percentage},
+                                   :test-show-test-converted-rate {:width 12, :header "Test", :format :percentage},
+                                   :bookings-per-show-lift {:header "Revenue Per Show Lift", :format :percentage},
+                                   :test-control-all {:width 15, :header "All/Test/Control"},
+                                   :show {:format :number, :header "Impressions"}} 
+                    :params {:channel "SPG" :placement "carousel" :language "EN_US"}})
+    (bundle-profile/create {:id "pso-spg-english-carousel-bundle"
+                            :name "PSO SPG.com English Carousel"
+                            :subject "Remington's PSO Test"
+                            :body "Remington"
+                            :recurrence "weekly"})
+    (bundle-profile/add-distributions "pso-spg-english-carousel-bundle" ["test-reports@outpace.com"])
+    (bundle-report/create {:bundle-profile-id "pso-spg-english-carousel-bundle" :report-id "pso-spg-english-carousel-report" :sort-order 1})))

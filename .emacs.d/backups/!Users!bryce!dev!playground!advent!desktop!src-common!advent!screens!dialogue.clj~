@@ -1,0 +1,24 @@
+(ns advent.core.screens.dialogue)
+
+(defscreen talking-screen
+  :on-show
+  (fn [screen entities]
+    (update! screen :renderer (stage) :camera (orthographic)) [])
+  :on-render
+  (fn [screen entities]
+    (render! screen entities)
+    entities)
+
+  :on-talk
+  (fn [{:keys [create-talk text x y]} entities]
+    [(let [font (bitmap-font "mainfont.fnt" ) 
+           tr (bitmap-font! font :get-region)
+           tx (.getTexture tr)
+           _ (texture! tx :set-filter Texture$TextureFilter/Linear Texture$TextureFilter/Linear)
+           talk (assoc (label text (style :label font (color :white)) ) :x (* 4 x) :y (* 4 y))]
+       (label! talk :set-font-scale 1)
+       talk)])
+
+  
+  :on-resize (fn [screen entities]
+               (height! screen (game :height))))

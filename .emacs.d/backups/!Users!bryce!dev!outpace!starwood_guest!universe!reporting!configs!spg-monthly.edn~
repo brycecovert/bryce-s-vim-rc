@@ -1,0 +1,14 @@
+{
+ ;; avaliable report-names are :sws, :pso, :tdo, :sop-marketing
+ ;; :sop-home-runs
+ :reports
+ ;; SWS report
+ [{:report-name :sws}
+
+  ;; PSO reports
+  {:report-name :pso :subreports [:spg-english-carousel :spg-chinese-carousel :spg-mobile-carousel :spg-text :spg-my-account :spg-my-stays]}] 
+  ;; Specify a different output file.
+  :out-file "SPG-monthly.xls"
+
+  ;; Email customization
+  :email-to "yuriy@outpace.com"}

@@ -1,0 +1,5 @@
+(ns outpace.reporting.views.utils
+  (:require [om.core :as om :require-macros true]
+            [om.dom :as dom :require-macros true]))
+(defn create-option [profile]
+  (dom/option #js {:value (:value profile) :className "form-control"} (:name profile)))

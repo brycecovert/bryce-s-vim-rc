@@ -1,0 +1,7 @@
+(ns advent.zone)
+
+(defn box-maker-fn [x1 y1 x2 y2]
+  (fn [x y]
+    (and
+     (< x1 x x2)
+     (< y1 y y2))))

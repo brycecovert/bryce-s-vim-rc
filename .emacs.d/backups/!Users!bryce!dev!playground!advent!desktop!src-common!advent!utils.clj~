@@ -1,0 +1,14 @@
+(ns advent.utils
+  (:require [play-clj.core :refer :all]
+            [play-clj.ui :refer :all]
+            [play-clj.utils :refer :all]
+            [play-clj.g2d :refer :all]
+            [clojure.pprint]
+            [advent.pathfind])
+  (:import [com.badlogic.gdx.graphics Pixmap Pixmap$Filter Texture Texture$TextureFilter]
+           [com.badlogic.gdx.graphics.g2d TextureRegion]
+           [com.badlogic.gdx.scenes.scene2d.utils Align]))
+(defn log-coords [screen entities]
+  (let [{:keys [x y]} (input->screen screen {:x (:input-x screen) :y (:input-y screen)})]
+    (println (:input-x screen) (:input-y screen) "->" x y)
+    ))

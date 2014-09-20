@@ -1,0 +1,161 @@
+(ns reporting.views.bundle-job
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
+            [clojure.string :as str]
+            [reporting.requests :as requests]
+            [cljs-time.format :as f]
+            [cljs-time.coerce :as c]
+            [cljs.core.async :refer [<!]]))
+
+(def find-email (partial re-find #"(?i)^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,10}$"))
+
+
+(def reporting-service-url-base "..")
+
+(defn reporting-service-url [& parts]
+  (str/join "/" (cons reporting-service-url-base parts)))
+
+(defn report-profiles! [a]
+  (go
+    (let [r (<! (requests/get-with-auth (reporting-service-url "profiles") {}))]
+      (when (= 200 (:status r))
+        (swap! a assoc-in [:report-profiles]
+               (cons {:name "" :value ""}
+                     (for [profile (:body r)]
+                       {:name (:name profile) :value (:id profile)})))))))
+
+(def app-state (atom {:destination-email {:text "test-reports@outpace.com"}
+                      :start-date {:text "2014-05-01" :date (f/parse (f/formatters :date) "2014-05-01")}
+                      :end-date {:text "2014-05-02" :date (f/parse (f/formatters :date) "2014-05-02")}
+                      :profile-name {:text ""}
+                      :job {:state :idle}}))
+
+(report-profiles! app-state)
+
+(defn check-report-status [app job-url]
+  (go
+    (let [{{:keys [complete-timestamp report-url]} :body :as response} (<! (requests/get-with-auth job-url {}))]
+      (println "fetched" response)
+      (if complete-timestamp
+        (om/update! app [:job :state] :success)
+        (js/setTimeout #(check-report-status app job-url) 1000)))))
+
+(defn run-report [app]
+  (om/update! app [:job :state] :working)
+  (go
+   (let [start-date (:date (:start-date @app))
+         end-date (:date (:end-date @app))
+         response (<! (requests/post-with-auth (reporting-service-url "jobs")
+                                      {:edn-params {:bundle-profile-id (:text (:profile-name @app))
+                                                    :report-params {:start-date (c/to-date start-date)
+                                                                    :end-date (c/to-date end-date)}
+                                                    :destination-email (:text (:destination-email @app))}}))]
+      (when (= (:status response) 401)
+        (redirect-to-auth))
+      (when (#{400 500} (:status response))
+        (om/update! app [:job :state] :error))
+      (println (get-in response [:body :job-url]))
+      (let [job-url (get-in response [:body :job-url])]
+        (js/setTimeout #(check-report-status app job-url) 1000))))
+  false)
+
+(defn update-date-field [e cursor]
+  (let [text-value (.. e -target -value)
+        date-value (try (f/parse (f/formatters :date) text-value)
+                        (catch js/Error e nil))]
+    (om/transact! cursor :text (constantly text-value))
+    (om/transact! cursor :date (constantly date-value)))
+  false)
+
+(defn make-date-field [{:keys [name label cursor]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (dom/div #js {:className "col-md-3"} (dom/label #js {:htmlFor name}  label)
+               (dom/input #js {:className "form-control"
+                               :name name
+                               :id name
+                               :value (:text cursor)
+                               :onChange #(update-date-field % cursor)}
+                          nil)))
+    om/IDidMount
+    (did-mount [_]
+      (let [doc (js/jQuery (str "#" name))
+            date-picker (.datepicker doc #js {:format "yyyy-mm-dd" :autoclose true :forceParse false})]
+        (.on date-picker "changeDate" #(update-date-field % cursor))))))
+
+(defn update-profile-name [e app]
+  (om/transact! app :text (constantly (.. e -target -value))))
+
+(defn update-destination-email [e cursor]
+  (om/transact! cursor :text (constantly (.. e -target -value))))
+
+(defn make-email-field [app]
+  (let [cursor (:destination-email app)]
+    (dom/div #js {:className "col-md-3"} (dom/label #js {:htmlFor "destination_email"}  "Destination Email")
+             (dom/input #js {:className "form-control"
+                             :name "destination_email"
+                             :id "destination_email"
+                             :value (:text cursor)
+                             :onChange #(update-destination-email % cursor)}))))
+
+(defn create-option [profile]
+  (dom/option #js {:value (:value profile) :className "form-control"} (:name profile)))
+
+(defn make-profile-name-field [app]
+  (let [cursor (:profile-name app)]
+    (dom/div #js {:className "col-md-3"}
+             (dom/label #js {:htmlFor "report_profile"} "Report Profile")
+             (apply dom/select
+                    #js {:className "form-control"
+                         :name "report_profile"
+                         :id "report_profile"
+                         :onChange #(update-profile-name % cursor)}
+                    (map create-option (:report-profiles app))))))
+
+(defn make-spinner-thing [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [job-state (get-in app [:job :state])]
+        (apply dom/div (case job-state
+                         :idle #js {:className "hidden" :news job-state}
+                         :working #js {:className "alert alert-info"}
+                         :error #js {:className "alert alert-danger"}
+                         :success #js {:className "alert alert-success"})
+               (let [icon-style #js {:margin-right "5px"}]
+                   (case job-state
+                     :working [(dom/i #js {:className "glyphicon glyphicon-time" :style icon-style} "") "Working..."]
+                     :error  [(dom/i #js {:className "glyphicon glyphicon-exclamation-sign" :style icon-style} "") "Sorry, an error occurred. Please contact team-reporting@outpace.com to report this issue."]
+                     :success [(dom/i #js {:className "glyphicon glyphicon-ok" :style icon-style} "") "Email sent!"]
+                     :idle nil)))))))
+
+(defn invalid? [app]
+  (let [start-date (get-in app [:start-date :date])
+        end-date (get-in app [:end-date :date])]
+    (or (empty? (get-in app [:profile-name :text]))
+        (nil? (find-email (get-in app [:destination-email :text])))
+        (nil? (get-in app [:start-date :date]))
+        (nil? (get-in app [:end-date :date]))))) 
+
+(defn run-profile-app [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (dom/div
+       nil
+       (dom/h2 nil "Run a report profile")
+       (om/build make-spinner-thing app)
+       (dom/form nil
+                 (dom/div #js {:className "row"}
+                          (om/build make-date-field {:name "start_date" :label "Start Date" :cursor (:start-date app)})
+                          (om/build make-date-field {:name "end_date" :label "End Date" :cursor (:end-date app)}))
+                 (dom/div #js {:className "row"}
+                          (make-profile-name-field app))
+                 (dom/div #js {:className "row"} (make-email-field app))
+                 (dom/div nil (dom/input #js {:type "submit" :value "Run report" :className (str "btn btn-lg btn-primary "
+                                                                                                 (when (invalid? app)
+                                                                                                   "disabled"))
+                                              :onClick #(run-report app)})))))))
+

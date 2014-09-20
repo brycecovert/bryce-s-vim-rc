@@ -1,0 +1,138 @@
+# IdentityFile ~/.ssh/ids/%h/%r/id_rsa
+# IdentityFile ~/.ssh/ids/%h/%r/id_dsa
+# IdentityFile ~/.ssh/ids/%h/id_rsa
+# IdentityFile ~/.ssh/ids/%h/id_dsa
+# IdentityFile ~/.ssh/id_rsa
+# IdentityFile ~/.ssh/id_dsa
+
+Host git.brycecovertoperations.com
+    IdentityFile ~/.ssh/git.brycecovertoperations.com
+    User bryce
+
+Host www.brycecovertoperations.com
+    IdentityFile ~/.ssh/mail.brycecovertoperations.com
+    User root
+
+Host mail.brycecovertoperations.com
+    IdentityFile ~/.ssh/mail.brycecovertoperations.com
+    User deploy
+
+Host mailserver3.brycecovertoperations.com
+    IdentityFile ~/.ssh/mail.brycecovertoperations.com
+    User deploy
+    Port 11022
+
+
+Host www.nitpickqa.com
+    IdentityFile ~/.ssh/www.nitpickqa.com
+    User root
+
+Host nitpick@www.nitpickqa.com
+    IdentityFile ~/.ssh/www.nitpickqa.com
+    User nitpick
+
+Host git@heroku.com
+    IdentityFile ~/.ssh/git.brycecovertoperations.com
+
+Host bitbucket.org
+    # IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/www.nitpickqa.com
+
+#outpace:
+
+Host admin1 admin1.outpace.com
+  StrictHostKeyChecking no
+  HostName admin1.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host qa qa_nginx
+  StrictHostKeyChecking no
+  HostName ec2-54-200-96-66.us-west-2.compute.amazonaws.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host qa_main
+  HostName ec2-54-200-129-66.us-west-2.compute.amazonaws.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host qa2 qa2_nginx
+  StrictHostKeyChecking no
+  HostName ec2-54-201-38-143.us-west-2.compute.amazonaws.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host qa2_main
+  HostName ec2-54-200-134-31.us-west-2.compute.amazonaws.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host sql drivers_calc prod_drivers_calc
+  HostName ec2-54-200-128-164.us-west-2.compute.amazonaws.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host ci
+  HostName 54.200.38.30
+  IdentityFile ~/.ssh/outpace.pem
+
+
+Host mine datamining datamining-starwood.outpace.com
+  HostName datamining-starwood.outpace.com
+  # IdentityFile 
+
+Host mineb
+  HostName ec2-54-201-200-75.us-west-2.compute.amazonaws.com
+
+Host web1 web1.outpace.com
+  HostName web1-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host web2 web2.outpace.com
+  HostName web2-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host app1 app1-starwood.outpace.com
+  HostName app1-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host app2 app2-starwood.outpace.com
+  HostName app2-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host dba dba-starwood.outpace.com
+  HostName dba-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host dbb dbb-starwood.outpace.com
+  HostName dbb-starwood.outpace.com
+  IdentityFile ~/.ssh/outpace.pem
+
+Host qa1_web
+  Hostname web.qa1.outpace.com
+
+Host qa1_app
+  Hostname app.qa1.outpace.com
+
+Host qa1_db
+  Hostname db.qa1.outpace.com
+
+Host qa3_web
+  Hostname web.qa3.outpace.com
+
+Host qa3_app
+  Hostname app.qa3.outpace.com
+
+Host qa3_db
+  Hostname db.qa3.outpace.com
+
+Host customer_prod1_app
+  Hostname 54.201.52.167
+
+Host hadoop
+  Hostname 54.201.221.131
+  User hadoop
+  IdentityFile ~/.ssh/outpace.pem
+
+# Global defaults
+Host *
+  ServerAliveInterval 120
+  User ubuntu
+
+Host localhost
+  StrictHostKeyChecking no

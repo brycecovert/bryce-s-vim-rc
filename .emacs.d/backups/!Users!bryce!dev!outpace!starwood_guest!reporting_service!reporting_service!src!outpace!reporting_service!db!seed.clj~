@@ -1,0 +1,38 @@
+(ns outpace.reporting-service.db.seed)
+
+(defn seed-database
+  "Seeds a local development database with records that make it
+  possible to hit the reporting service from a REPL or with curl."
+  [{:keys [host]}]
+  (with-transaction
+    (data-source/create {:id "test-data-source"
+                         :name "test-data-source"
+                         :uri (str host "/guest-analytics-service/sop-home-runs-report")
+                         :metadata-uri (str host "/guest-analytics-service/sop-home-runs-metadata")})
+    (report/create {:id "test-report"
+                    :title "SOP Home Runs Report"
+                    :data-source-id "test-data-source"
+                    :columns [:offer-description
+                              :tier
+                              :times-above-average
+                              :offer-name
+                              :property-id
+                              :brand]
+                    :column-specs {:offer-description {:width 50, :header "Offer Description"}
+                                   :tier {:header {:value "Performance Tier"
+                                                   :comment {:text "Home run: Above 2x Property Average Conversion Rate\nBase hit: Above Property Average Conversion Rate\nStrikeout: Below Property Average Conversion Rate\nInsufficient Data: Minimum performance data threshold not yet reached"
+                                                             :width 3
+                                                             :height 5}}}
+                                   :times-above-average {:header "Times Above Average\nConversion Rate"
+                                                         :format :single-decimal}
+                                   :offer-name {:header "Offer Name"}
+                                   :property-id {:width 20, :header "Property Id", :format :general}
+                                   :brand {:width 20, :header "Brand", :format :general}}
+                    :params {}})
+    (bundle-profile/create {:id "test-bundle-profile"
+                            :name "SOP Reports"
+                            :subject "A subject!"
+                            :body "A body!"
+                            :recurrence "weekly"})
+    (bundle-profile/add-distributions "test-bundle-profile" ["test-reports@outpace.com"])
+    (bundle-report/create {:bundle-profile-id "test-bundle-profile" :report-id "test-report" :sort-order 1})))

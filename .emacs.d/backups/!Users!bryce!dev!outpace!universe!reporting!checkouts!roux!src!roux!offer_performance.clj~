@@ -1,0 +1,493 @@
+(ns roux.offer-performance
+  (:require [clojure.string :as str]
+            [clojure.tools.cli :refer [parse-opts summarize]]
+            [roux.email :as email]
+            [roux.events :as e]
+            [roux.format :as f]
+            [roux.offer :as o]
+            [roux.pivot :as p]
+            [roux.utils :as u]
+            [clj-time.core :as time]
+            [clj-time.coerce :as time-coerce]
+            [clj-time.format :as time-format]
+            [clj-time.local :as time-local]
+            [clojure.set :as set]))
+
+(defn as-est [dt]
+  (time/from-time-zone dt (time/time-zone-for-offset -5)))
+
+(defn to-est [dt]
+  (time/to-time-zone dt (time/time-zone-for-offset -5)))
+
+(defn sort-by-columns [columns rows]
+  (let [select-columns (apply juxt columns)]
+    (sort-by (apply juxt columns)
+             (fn [x y] (compare y x))
+             rows)))
+
+(defn add-rates-to-a-row [row]
+  (let [clickthrough-rate (u/rate row :clicks :shows)
+        conversion-rate (u/rate row :conversions :shows)
+        test-clickthrough-rate (u/rate row :test-clicks :test-shows)
+        control-clickthrough-rate (u/rate row :control-clicks :control-shows)
+        ctr-lift (u/lift test-clickthrough-rate control-clickthrough-rate)
+        test-conversion-rate (u/rate row :test-conversions :test-shows)
+        control-conversion-rate (u/rate row :control-conversions :control-shows)
+        conversion-lift (u/lift test-conversion-rate control-conversion-rate)]
+    (assoc row
+      :CTR clickthrough-rate
+      :conversion-rate conversion-rate
+      :test-CTR test-clickthrough-rate
+      :control-CTR control-clickthrough-rate
+      :CTR-lift ctr-lift
+      :test-conversion-rate test-conversion-rate
+      :control-conversion-rate control-conversion-rate
+      :conversion-lift conversion-lift)))
+
+
+(defn add-rates [rows]
+  (map add-rates-to-a-row rows))
+
+(def total-columns
+  [:shows
+   :clicks
+   :discussed
+   :conversions
+   :order_total
+   :test-shows
+   :test-clicks
+   :test-conversions
+   :control-shows
+   :control-clicks
+   :control-conversions])
+
+(def ^:const total-row-name "TOTAL")
+
+(defn calc-total-row [base-row rows columns]
+  (add-rates-to-a-row
+   (reduce
+    (fn [total-row column]
+      (let [values (filter #(not (nil? %)) (map #(column %) rows))]
+        (if (not (empty? values))
+          (assoc total-row column (apply + values))
+          total-row)))
+    base-row
+    columns)))
+
+(defn add-total-row [rows]
+  (cons (calc-total-row {:offer_name total-row-name} rows total-columns) rows))
+
+(defn assoc-offer-names [offers rows]
+  (map #(assoc % :offer_name (get offers (:offer_id %) "")) rows))
+
+(defn pivot-by-in-test-group-and-type [data]
+  (let [bucket-names {{:in_test_group "Y" :type "show"}      :test-shows
+                      {:in_test_group "Y" :type "click"}     :test-clicks
+                      {:in_test_group "Y" :type "converted"} :test-conversions
+                      {:in_test_group "N" :type "show"}      :control-shows
+                      {:in_test_group "N" :type "click"}     :control-clicks
+                      {:in_test_group "N" :type "converted"} :control-conversions}]
+    (p/pivot data [:channel :offer_id :offer_name] [:in_test_group :type] bucket-names :cnt)))
+
+(defn pivot-by-type [columns data]
+  (let [bucket-names {{:type "show"}      :shows
+                      {:type "click"}     :clicks
+                      {:type "discussed"} :discussed
+                      {:type "converted"} :conversions}]
+    (p/pivot data columns [:type] bucket-names :cnt)))
+
+(defn pivot-by-type-for-offer [data]
+  (pivot-by-type [:channel :offer_id :offer_name :avg_position] data))
+
+(defn pivot-by-type-for-summary [data]
+  (let [bucket-names {{:type "show"}      :shows
+                      {:type "click"}     :clicks
+                      {:type "converted"} :conversions}
+        pivoted-rows (p/pivot data [:month :channel :language :test-control-all] [:type] bucket-names
+                              #(select-keys % [:cnt :order_total])
+                              (partial merge-with (fnil + 0 0))
+                              {:cnt 0 :order_total 0})
+        cnt-or-zero (fn [m] (or (:cnt m) 0))]
+    (map (fn [row]
+           (-> row
+               (assoc :order_total (get-in row [:conversions :order_total] 0))
+               (update-in [:shows] cnt-or-zero)
+               (update-in [:clicks] cnt-or-zero)
+               (update-in [:conversions] cnt-or-zero)))
+         pivoted-rows)))
+
+(def languages {"EN_US" "English"
+                "ZH_CN" "Chinese"
+                nil     "English"})
+
+(def column-specs
+  {
+   :channel                     {:display-name "Channel"}
+   :language                    {:display-name "Language"}
+   :offer_id                    {:display-name "Offer Id"}
+   :offer_name                  {:display-name "Offer Name"}
+   :web_canada_id               {:display-name "Web Canada Id"}
+   :property_id                 {:display-name "Property Id"}
+   :order_total                 {:display-name "Bookings" :format :dollars}
+   :money-per-conversion        {:display-name "$ Per Conversion" :format :dollars-and-cents}
+   :money-per-conversion-lift   {:display-name "$ Per Conversion Lift" :format :percentage}
+   :money-per-show              {:display-name "$ Per Impression" :format :dollars-and-cents}
+   :money-per-show-lift         {:display-name "$ Per Impression Lift" :format :percentage}
+   :views                       {:display-name "Views" :format :number}
+   :avg_position                {:display-name "Avg Position" :format :single-decimal}
+   :shows                       {:display-name "Shows" :format :number}
+   :clicks                      {:display-name "Clicks" :format :number}
+   :conversions                 {:display-name "Conversions" :format :number}
+   :discussed                   {:display-name "Discussed" :format :number}
+   :converted                   {:display-name "Converted" :format :number}
+   :CTR                         {:display-name "Click Through Rate" :format :percentage}
+   :conversion-rate             {:display-name "Conversion Rate" :format :percentage}
+   :test-shows                  {:display-name "Test Shows" :format :number}
+   :test-clicks                 {:display-name "Test Clicks" :format :number}
+   :test-conversions            {:display-name "Test Conversions" :format :number}
+   :control-shows               {:display-name "Control Shows" :format :number}
+   :control-clicks              {:display-name "Control Clicks" :format :number}
+   :control-conversions         {:display-name "Control Conversions" :format :number}
+   :test-CTR                    {:display-name "Test Clickthrough Rate" :format :percentage}
+   :control-CTR                 {:display-name "Control Clickthrough Rate" :format :percentage}
+   :CTR-lift                    {:display-name "Clickthrough Rate Lift" :format :rounded-percentage}
+   :test-conversion-rate        {:display-name "Test Conversion Rate" :format :percentage}
+   :control-conversion-rate     {:display-name "Control Conversion Rate" :format :percentage}
+   :conversion-lift             {:display-name "Conversion Rate Lift" :format :rounded-percentage}
+   :month                       {:display-name "Month"}
+   :test-control-all            {:display-name "All/Test/Control"}
+   })
+
+(defn offer-name-equals [name]
+  (fn [row]
+    (= name (:offer_name row))))
+
+(def totals-offer-row? (offer-name-equals total-row-name))
+
+(defn channel-and-placement [row]
+  (let [channel (:channel row)]
+    (if-not (= "SPG" channel)
+      channel
+      (if (and (seq (:position row))
+               (.startsWith (:position row) "text"))
+        "SPG text"
+        "SPG carousel"))))
+
+(defn title-rows [name start-date end-date]
+  [
+   [(str "REPORT TIMEFRAME (GMT-5): " (u/YYYY-mm-dd-local start-date) " - " (u/YYYY-mm-dd-local end-date))]
+   [(str "REPORT GENERATED (GMT-5): " (u/YYYY-mm-dd-HH:MM-local (to-est (time/now))))]
+   [(str "REPORT PLACEMENT: " name)]])
+
+(defn spg-report [name rows start-date end-date]
+  {:title   (title-rows name start-date end-date)
+   :columns [[nil [:offer_id :offer_name]]
+             ["TEST" [:test-shows :test-clicks :test-conversions]]
+             ["CONTROL" [:control-shows :control-clicks :control-conversions]]
+             ["CLICKTHROUGH RATES" [:test-CTR :control-CTR :CTR-lift]]
+             ["CONVERSION RATES" [:test-conversion-rate :control-conversion-rate :conversion-lift]]]
+   :column-specs column-specs
+   :rows    (->> rows
+                 pivot-by-in-test-group-and-type
+                 add-rates
+                 (sort-by-columns [:test-conversion-rate])
+                 add-total-row)})
+
+(defn spg? [row]
+  (= "SPG" (:channel row)))
+
+(defn mobile? [row]
+  (= "SPG_MOBI" (:channel row)))
+
+(defn carousel? [row]
+  (or (not (seq (:position row)))
+      (not (.startsWith (:position row) "text"))))
+
+(defn english? [row]
+  (= "EN_US" (:language row)))
+
+(defn spg-english-carousel-report [rows start-date end-date]
+  (spg-report "SPG.com Carousel"
+              (->> rows
+                   (filter spg?)
+                   (filter carousel?)
+                   (filter english?))
+              start-date end-date))
+
+(defn chinese? [row]
+  (= "ZH_CN" (:language row)))
+
+(defn spg-chinese-carousel-report [rows start-date end-date]
+  (spg-report "SPG.com Carousel (Chinese)"
+              (->> rows
+                   (filter spg?)
+                   (filter carousel?)
+                   (filter chinese?))
+              start-date end-date))
+
+(defn spg-mobile-carousel-report [rows start-date end-date]
+  (spg-report "SPG.com Carousel (Mobile)"
+              (->> rows
+                   (filter carousel?)
+                   (filter mobile?))
+              start-date end-date))
+
+
+(defn spg-my-account-report [rows start-date end-date]
+  (spg-report "My Account Placement"
+              (->> rows
+                   (filter #(= "SPG_MY_ACCOUNT" (:channel %))))
+              start-date end-date))
+
+
+(defn spg-my-stays-report [rows start-date end-date]
+  (spg-report "My Stays Placement"
+              (->> rows
+                   (filter #(= "SPG_MY_STAYS" (:channel %))))
+              start-date end-date))
+
+(defn spg-text? [row]
+  (and (= "SPG" (:channel row))
+       (and (seq (:position row))
+            (.startsWith (:position row) "text"))))
+
+(defn spg-text-report [rows start-date end-date]
+  (spg-report "SPG.com Text Offers" (filter spg-text? rows) start-date end-date))
+
+(defn estatement-report [database-url elasticsearch-url start-date end-date])
+
+(defn sop? [row]
+  (= "SOP" (:channel row)))
+
+(defn add-average-positions [average-positions start-date end-date rows]
+  (for [row rows]
+    (assoc row :avg_position (when-let [a (get average-positions (:offer_id row))]
+                               (inc a)))))
+
+(defn add-web-canada-id-and-property [offer-data rows]
+  (for [row rows]
+    (assoc row
+      :web_canada_id (get-in offer-data [(:offer_id row) :source_key])
+      :property_id (get-in offer-data [(:offer_id row) :property_id]))))
+
+(defn calc-property-totals [property-groups]
+  (for [[property-id property-rows] property-groups]
+    (assoc (calc-total-row {:offer_name total-row-name} property-rows total-columns)
+      :property_id property-id)))
+
+(defn sop-report [rows start-date end-date average-positions offer-data]
+  {:title   (title-rows "SOP All" start-date end-date)
+   :columns [:web_canada_id :property_id :offer_id :offer_name
+             :avg_position
+             :shows
+             :clicks
+             :conversions
+             :CTR
+             :conversion-rate]
+   :column-specs column-specs
+   :rows    (let [rows (->> rows
+                            (filter sop?)
+                            pivot-by-type-for-offer
+                            (add-web-canada-id-and-property offer-data)
+                            add-rates
+                            (add-average-positions average-positions start-date end-date)
+                            (sort-by-columns [:property_id :conversion-rate]))
+                  total-row (calc-total-row {:offer_name total-row-name} rows total-columns)
+                  property-groups (group-by :property_id rows)
+                  property-totals (sort-by-columns [:conversion-rate] (calc-property-totals property-groups))
+                  property-order (zipmap (map :property_id property-totals) (range))
+                  sorted-rows (sort-by (fn [row]
+                                         [(property-order (:property_id row))
+                                          (- (or (:conversion-rate row) 0))])
+                                       rows)]
+              (concat [total-row] property-totals sorted-rows))})
+
+(defn ccc? [row]
+  (= "CCC" (:channel row)))
+
+(defn add-views [views rows]
+  (if-let [total-row (first (filter totals-offer-row? rows))]
+    (concat [(assoc total-row :views views)]
+            (remove totals-offer-row? rows))
+    (throw (Exception. (str "A " total-row-name " row is required for adding views to it")))))
+
+(defn ccc-report [rows start-date end-date views]
+  {:title   (title-rows "CCC All" start-date end-date)
+   :columns [:offer_id :offer_name
+             :views
+             :shows
+             :discussed
+             :converted
+             :CTR
+             :conversion-rate]
+   :column-specs column-specs
+   :rows    (->> rows
+                 (filter ccc?)
+                 pivot-by-type-for-offer
+                 add-rates
+                 (map #(set/rename-keys % {:conversions :converted}))
+                 (sort-by-columns [:conversion-rate])
+                 add-total-row
+                 (add-views views)
+                 )})
+
+(defn shift-end-date [end-date]
+  (time/plus end-date (time/days 1)))
+
+(defn offer-performance-report [database-url elasticsearch-url start-date end-date]
+  (let [offer-names-by-id (o/offer-names-by-id elasticsearch-url)
+        average-positions (e/average-positions-for-sop-offers database-url start-date end-date)
+        average-positions (zipmap (map :offer_id average-positions) (map :avg_position average-positions))
+        views (e/ccc-views database-url start-date end-date)
+        sop-offer-data (o/sop-offers-data elasticsearch-url)
+        rows (->> (e/count-by database-url [:channel :language :position :offer_id :in_test_group :type]
+                              start-date (shift-end-date end-date))
+                  (assoc-offer-names offer-names-by-id)
+                  (remove (comp empty? :offer_name)))]
+    (-> []
+        (conj ["2) PSO SPG.com Carousel" (spg-english-carousel-report rows start-date end-date)])
+        (conj ["2) PSO SPG.com Carousel (Chinese)" (spg-chinese-carousel-report rows start-date end-date)])
+        (conj ["2) PSO SPG.com Carousel (Mobile)" (spg-mobile-carousel-report rows start-date end-date)])
+        (conj ["2) PSO SPG.com Text Offers" (spg-text-report rows start-date end-date)])
+        (conj ["2) PSO My Account" (spg-my-account-report rows start-date end-date)])
+        (conj ["2) PSO My Stays" (spg-my-stays-report rows start-date end-date)])
+        (conj ["2) PSO SOP" (sop-report rows start-date end-date average-positions sop-offer-data)])
+        #_(conj  ["2) PSO eStatement Header" (estatement-report rows start-date end-date)]) ;; no estatements data
+        (conj ["2) PSO CCC" (ccc-report rows start-date end-date views)]))))
+
+(def non-test-group-channel? #{"SOP" "CCC"})
+
+(defn concat-year-and-month [rows]
+  (for [row rows]
+    (dissoc (assoc row :month (format "%04d-%02d" (:year row) (:month row))) :year)))
+
+(defn mark-non-test-group-channels-as-all [rows]
+  (for [row rows]
+    (assoc row :test-control-all
+           (if (non-test-group-channel? (:channel row))
+             "All"
+             (case (:in_test_group row)
+               "Y" "Test"
+               "N" "Control"
+               nil)))))
+
+(defn map-language-values [rows]
+  (for [row rows]
+    (update-in row [:language] languages)))
+
+(defn calc-cohort-total-rows [rows]
+  (let [cohort-groups (group-by #(select-keys % [:channel :language :test-control-all]) rows)]
+    (for [[cohort cohort-rows] cohort-groups]
+      (calc-total-row
+       (assoc cohort :month total-row-name)
+       cohort-rows total-columns))))
+
+(defn filter-unknown-test-groups [rows]
+  (remove (fn [row] (nil? (:test-control-all row))) rows))
+
+(defn add-lifts-to-channels [rows]
+  (let [channel-groups (group-by (juxt :month :channel :language) rows)]
+    (flatten
+     (for [[month-channel channel-group] channel-groups]
+       (let [{[test-row] "Test" [control-row] "Control"} (group-by :test-control-all channel-group)]
+         (if (and test-row control-row)
+           [(assoc test-row
+              :conversion-lift (u/lift (:conversion-rate test-row)
+                                       (:conversion-rate control-row))
+              :CTR-lift (u/lift (:CTR test-row)
+                                (:CTR control-row))
+              :money-per-conversion-lift (u/lift (:money-per-conversion test-row)
+                                                 (:money-per-conversion control-row))
+              :money-per-show-lift (u/lift (:money-per-show test-row)
+                                           (:money-per-show control-row)))
+            control-row]
+           channel-group))))))
+
+(defn add-money-per-key [lookup-key result-key row]
+  (let [order_total (:order_total row)
+        value (get row lookup-key)]
+    (if (and value order_total (pos? value))
+      (assoc row result-key (/ order_total value))
+      row)))
+
+(defn add-money-per-conversions [rows]
+  (map (partial add-money-per-key :conversions :money-per-conversion) rows))
+
+(defn add-money-per-shows [rows]
+  (map (partial add-money-per-key :shows :money-per-show) rows))
+
+(defn system-wide-summary-report [rows start-date end-date]
+  (let [rows (->> rows
+                  concat-year-and-month
+                  mark-non-test-group-channels-as-all
+                  filter-unknown-test-groups
+                  map-language-values
+                  pivot-by-type-for-summary
+                  add-money-per-conversions
+                  add-money-per-shows
+                  add-rates
+                  add-lifts-to-channels
+                  (sort-by-columns [:month :channel :language :test-control-all]))
+        cohort-total-rows (->> rows
+                               calc-cohort-total-rows
+                               add-money-per-conversions
+                               add-money-per-shows
+                               add-lifts-to-channels
+                               (sort-by-columns [:channel :language]))]
+    {:title   (title-rows "System Wide Summary" start-date end-date)
+     :columns [:month :channel :language :test-control-all :shows :clicks :conversions
+               :CTR :CTR-lift :conversion-rate :conversion-lift
+               :order_total :money-per-conversion :money-per-conversion-lift
+               :money-per-show :money-per-show-lift]
+     :column-specs column-specs
+     :rows    (concat cohort-total-rows rows)}))
+
+(defn overview-sheet []
+  {:title   []
+   :columns [:name :description]
+   :rows    [{:name "1) System-Wide Summary (SWS)" :description "What are the high level results? (Includes test vs control and monthly results)"}
+             {:name "2) Placement Summary & Offers (PSO)" :description "How are individual offers performing?"}
+             #_{:name "3) Top Drivers per Offer (TDO)" :description "How can I better target offers?"}
+             #_{:name "4) Top Offers per Driver (TOD)" :description "How are people (i.e. Drivers) responding to offers?"}]
+   :column-specs {:name {:display-name "Canned Report Type"}
+                  :description {:display-name "Description - answers the following questions"}}})
+
+(def default-database-url "jdbc:hive2://localhost:21050/;auth=noSasl")
+(def default-elasticsearch-url "http://localhost:9200")
+
+(defn parse-date [s]
+  (as-est (time-format/parse (time-format/formatters :year-month-day) s)))
+
+(defn options [args]
+  (let [option-specs [["-s" "--start-date DATE" "Start date (UTC -5) in YYYY-MM-dd (starting 2013-11-04)"
+                       :default (as-est (time/date-time 2013 11 4)) :parse-fn parse-date]
+                      ["-e" "--end-date DATE" "End date (UTC -5) in YYYY-MM-dd" :default (as-est (time/now)) :parse-fn parse-date]
+                      ["-d" "--database-url URL" "Hive location" :default default-database-url]
+                      ["-u" "--elasticsearch-url URL" "Elasticsearch location" :default default-elasticsearch-url]
+                      ["-o" "--out-file REPORT-NAME.xls" :default "summary.xls"]
+                      ["-j" "--email-subject SUBJECT"]
+                      ["-t" "--email-to EMAIL ADDRESS"]
+                      ["-h" "--help"]]
+        {:keys [options summary]} (parse-opts args option-specs)
+        usage-and-quit (fn []
+                         (println "Report options:")
+                         (println summary)
+                         (System/exit 1))]
+    (when (:help options)
+      (usage-and-quit))
+    options))
+
+(defn subject-from-dates [start-date end-date]
+  (str "Offer Performance Report for " start-date " to " end-date))
+
+(defn -main [& args]
+  (let [{:keys [start-date end-date database-url elasticsearch-url email-to out-file email-subject]} (options args)
+        email-subject (or email-subject (subject-from-dates start-date end-date))]
+    (println "Running report from" start-date "to" end-date)
+    (f/to-excel out-file
+                (concat
+                 [["Overview" (overview-sheet)]
+                  ["1) SWS" (roux.offer_performance/system-wide-summary-report (e/system-wide-summary-count database-url start-date (shift-end-date end-date)) start-date end-date)]]
+                 (offer-performance-report database-url elasticsearch-url start-date end-date)))
+    (when email-to
+      (email/send-file email-to email-subject {:type "text/plain" :content "Here's the report!"} out-file))))

@@ -1,0 +1,24 @@
+(ns outpace.reporting-service.db.report-test
+  (:require [clojure.test :refer :all]
+            [outpace.reporting-service.test-util :refer :all]
+            [outpace.reporting-service.db.data-source :as data-source]
+            [outpace.reporting-service.db.report :refer :all]
+            [clojure.java.jdbc :as sql]
+            [schema.test :as st]
+            [clj-time.core :as time]
+            [clj-time.local :as local]
+            [clojure.set :as set]))
+
+
+(use-fixtures :each roll-back st/validate-schemas)
+
+(deftest ^:integration store-report
+
+  (let [data-source (create (test-data-source))]
+
+    (testing "it should have an id after storing"
+      (is (not (nil? (:id data-source)))))
+
+    (testing "it should store all fields"
+      (is (= data-source (find-by-id (:id data-source)))))))
+

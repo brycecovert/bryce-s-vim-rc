@@ -1,0 +1,56 @@
+
+;; ----- smex-history -----
+(
+ cider-jack-in
+ paredit-mode
+ previous-buffer
+ backtrace
+ linum-mode
+ line-number-mode
+ rgrep
+)
+
+;; ----- smex-data -----
+(
+ (cider-jack-in . 106)
+ (paredit-forward-slurp-sexp . 3)
+ (package-install . 1)
+ (revert-buffer . 2)
+ (describe-key . 4)
+ (evil-mode . 46)
+ (linum-mode . 4)
+ (clipboard-yank . 1)
+ (dired . 3)
+ (clojure-test-mode . 11)
+ (mark-whole-buffer . 1)
+ (clj-scratch . 1)
+ (cider-eval-expression-at-point-in-repl . 1)
+ (paredit-forward-barf-sexp . 3)
+ (paredit-mode . 13)
+ (undo . 1)
+ (undo-tree-mode . 1)
+ (cider . 27)
+ (cider-quit . 40)
+ (cider-mode . 2)
+ (ack . 3)
+ (rgrep . 39)
+ (make-directory . 5)
+ (clojure-test-run-tests . 60)
+ (toggle-truncate-lines . 7)
+ (clojure-mode-display-version . 1)
+ (global-set-key . 3)
+ (cider-jump . 3)
+ (next-match . 32)
+ (magit-status . 1)
+ (vc-annotate . 2)
+ (find-tag . 1)
+ (load-file . 4)
+ (version . 2)
+ (cider-popup-buffer-quit-function . 1)
+ (read-only-mode . 1)
+ (recover-file . 1)
+ (evil-open-fold . 2)
+ (line-number-mode . 2)
+ (backtrace . 1)
+ (previous-buffer . 3)
+)
