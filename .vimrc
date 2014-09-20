@@ -26,6 +26,7 @@ set listchars=tab:>-,trail:- " show tabs and trailing
 set scrolloff=10
 set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
 set laststatus=2
+set shiftwidth=2
 set switchbuf=useopen
 set showfulltag
 set cursorline
@@ -65,8 +66,6 @@ map <S-F3> :argadd **/*.py<CR> :silent argdo %s/\<<C-R><C-W>\>//cge<Left><Left><
 vmap <S-F3> y:argadd **/*.py<CR> :silent argdo %s/\<<C-R>"\>//cge<Left><Left><Left><Left>
 
 
-map <right> :bn<cr>
-map <left> :bp<cr>
 map <silent> <C-E> <Leader>be
 
 " Move on Command jk
@@ -74,6 +73,7 @@ nmap <F7> :execute "Ack " . expand("<cword>") <cr>
 vmap <F7> :execute "Ack " . expand("<cword>") <cr>
 
 map <C-S> :wa<CR>
+imap <C-S> :wa<CR>
 map <Leader>o <Leader>t expand("<cword>")
 map <Leader>lp :lprev <CR>
 map <Leader>ln :lnext <CR>

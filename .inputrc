@@ -11,8 +11,8 @@ set keymap vi-insert
 "\C-e": glob-expand-word
 
 # Vim style history search (Already Default)
-"\e[A": history-search-backward
-"\e[B": history-search-forward
+# "\e[A": history-search-backward
+# "\e[B": history-search-forward
 
 "\e[C": forward-char
 "\e[D": backward-char
