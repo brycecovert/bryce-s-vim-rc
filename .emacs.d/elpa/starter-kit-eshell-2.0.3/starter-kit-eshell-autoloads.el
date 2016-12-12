@@ -1,12 +1,11 @@
 ;;; starter-kit-eshell-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (car load-path))))
 
-;;;### (autoloads (eshell/extract eshell/cdg eshell/cdl eshell/cds
-;;;;;;  eshell/cds) "starter-kit-eshell" "starter-kit-eshell.el"
-;;;;;;  (21260 60848 0 0))
-;;; Generated autoloads from starter-kit-eshell.el
+;;;### (autoloads nil "starter-kit-eshell" "../../../../../.emacs.d/elpa/starter-kit-eshell-2.0.3/starter-kit-eshell.el"
+;;;;;;  "d704960d2b547836c8522afee98a5467")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/starter-kit-eshell-2.0.3/starter-kit-eshell.el
 
 (eval-after-load 'esh-opt '(progn (require 'em-prompt) (require 'em-term) (require 'em-cmpl) (setenv "PAGER" "cat") (set-face-attribute 'eshell-prompt nil :foreground "turquoise1") (add-hook 'eshell-mode-hook '(lambda nil (define-key eshell-mode-map "" 'eshell-bol))) (setq eshell-cmpl-cycle-completions nil) (add-to-list 'eshell-visual-commands "ssh") (add-to-list 'eshell-visual-commands "tail") (add-to-list 'eshell-command-completions-alist '("gunzip" "gz\\'")) (add-to-list 'eshell-command-completions-alist '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))))
 
@@ -41,16 +40,15 @@ Change directory to the project's root.
 
 ;;;***
 
-;;;### (autoloads nil nil ("starter-kit-eshell-pkg.el") (21260 60848
-;;;;;;  940053 0))
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/starter-kit-eshell-2.0.3/starter-kit-eshell-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-eshell-2.0.3/starter-kit-eshell.el")
+;;;;;;  (22509 26381 0 0))
 
 ;;;***
 
-(provide 'starter-kit-eshell-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
-;; coding: utf-8
 ;; End:
 ;;; starter-kit-eshell-autoloads.el ends here

@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# runs the report
-lein run -m reporting.main/generate-test-data

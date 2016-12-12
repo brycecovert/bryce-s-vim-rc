@@ -1,1 +1,0 @@
-{:reports [{:report-name :sws} {:report-name :pso :subreports [:subject-line-language]} {:report-name :tdo}]}

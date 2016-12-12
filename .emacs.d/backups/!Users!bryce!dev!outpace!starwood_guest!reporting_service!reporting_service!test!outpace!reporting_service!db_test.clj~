@@ -1,8 +1,0 @@
-(ns outpace.reporting-service.db-test
-  (:require [clojure.test :refer all]
-            [outpace.reporting-service.db :refer all]))
-
-(deftest create-data-source-test
-  (testing "it should create data sources"
-    (let [data-source {:name "Some data source" :uri "http://foo.com" :metadata-uri "http://bar.com"}]
-      (store-data-source data-source))))

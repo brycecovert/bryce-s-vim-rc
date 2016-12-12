@@ -1,11 +1,11 @@
 ;;; starter-kit-bindings-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (car load-path))))
 
-;;;### (autoloads nil "starter-kit-bindings" "starter-kit-bindings.el"
-;;;;;;  (21260 60848 0 0))
-;;; Generated autoloads from starter-kit-bindings.el
+;;;### (autoloads nil "starter-kit-bindings" "../../../../../.emacs.d/elpa/starter-kit-bindings-2.0.2/starter-kit-bindings.el"
+;;;;;;  "15871dde609756d91934756e8e9fd965")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/starter-kit-bindings-2.0.2/starter-kit-bindings.el
 
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 
@@ -65,16 +65,15 @@
 
 ;;;***
 
-;;;### (autoloads nil nil ("starter-kit-bindings-pkg.el") (21260
-;;;;;;  60848 208729 0))
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/starter-kit-bindings-2.0.2/starter-kit-bindings-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-bindings-2.0.2/starter-kit-bindings.el")
+;;;;;;  (22509 26380 0 0))
 
 ;;;***
 
-(provide 'starter-kit-bindings-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
-;; coding: utf-8
 ;; End:
 ;;; starter-kit-bindings-autoloads.el ends here

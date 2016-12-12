@@ -1,5 +1,0 @@
-(ns reporting-service.service-test
-  (:require [[clojure.test :refer :all]
-             [reporting-service.service :refer :all]]))
-
-(deftest testing-report-command)

@@ -1,9 +1,0 @@
-drop table reporting.events
-CREATE TABLE [reporting].[events](
-	[OFFER_CODE] [varchar](255) NOT NULL,
-	[type] [varchar](255) NOT NULL,
-	[timestamp] [datetime2](7) NOT NULL,
-	[email_addr_text] [nvarchar](1024) NOT NULL,
-	[offer_id] [varchar](256) NOT NULL
-    PRIMARY KEY CLUSTERED([OFFER_CODE], [type], [timestamp], [email_addr_text])
-) ON [PRIMARY]

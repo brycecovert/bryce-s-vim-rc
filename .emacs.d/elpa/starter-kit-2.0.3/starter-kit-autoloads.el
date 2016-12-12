@@ -1,11 +1,11 @@
 ;;; starter-kit-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (car load-path))))
 
-;;;### (autoloads nil "starter-kit" "starter-kit.el" (21260 60846
-;;;;;;  0 0))
-;;; Generated autoloads from starter-kit.el
+;;;### (autoloads nil "starter-kit" "../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit.el"
+;;;;;;  "3bb51f9a2031c18d6998f7f146ef826f")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit.el
 
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode)) (when (fboundp mode) (funcall mode -1)))
 
@@ -29,16 +29,18 @@
 
 ;;;***
 
-;;;### (autoloads nil nil ("starter-kit-defuns.el" "starter-kit-misc.el"
-;;;;;;  "starter-kit-pkg.el") (21260 60846 282100 0))
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit-defuns.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit-misc.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit-pkg.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-2.0.3/starter-kit.el")
+;;;;;;  (22509 26378 0 0))
 
 ;;;***
 
-(provide 'starter-kit-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
-;; coding: utf-8
 ;; End:
 ;;; starter-kit-autoloads.el ends here

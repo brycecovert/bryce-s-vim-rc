@@ -1,5 +1,0 @@
-(deftest test-remove-unwanted-property-ids
-  (testing "Removes unwanted IDs"
-    (is (= (remove-unwanted-property-ids #{4 5 6} (map #(hash-map :property_id %) (range 9)))
-           (map #(hash-map :property_id %) [4 5 6])))))
-

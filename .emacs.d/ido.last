@@ -1,0 +1,119 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/test/" . "dynamo/")
+ ("/Users/brycecovert/dev/lambtada/src/" . "lambtada/")
+ ("/Users/brycecovert/dev/lambtada/" . "src/")
+ ("/Users/brycecovert/dev/advent/desktop/src-common/advent/screens/" . "rooms/")
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/src/" . "play_clj/")
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/" . "src/")
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/" . "play-clj/")
+ ("/Users/brycecovert/dev/advent/desktop/src-common/advent/" . "screens/")
+ ("/Users/brycecovert/dev/advent/desktop/src-common/" . "advent/")
+ ("/Users/brycecovert/dev/advent/desktop/" . "checkouts/")
+ ("/Users/brycecovert/dev/playground/bewitch/src/" . "bewitch/")
+ ("/Users/brycecovert/dev/playground/bewitch/" . "src/")
+ ("/Users/brycecovert/dev/playground/pixie/pixie/" . "vm/")
+ ("/Users/brycecovert/dev/playground/pixie/" . "pixie/")
+ ("/Users/brycecovert/dev/playground/" . "bewitch/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/si/"
+ "/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/test/dynamo/"
+ "/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/test/"
+ "/Users/brycecovert/dev/advent/desktop/src-common/advent/"
+ "/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/src/play_clj/"
+ "/Users/brycecovert/dev/advent/desktop/src-common/advent/screens/"
+ "/Users/brycecovert/dev/lambtada/src/lambtada/"
+ "/Users/brycecovert/dev/advent/desktop/"
+ "/Users/brycecovert/dev/advent/desktop/src-common/advent/screens/rooms/"
+ "/Users/brycecovert/dev/playground/bewitch/src/bewitch/"
+ "/Users/brycecovert/dev/playground/bewitch/examples/"
+ "/Users/brycecovert/dev/playground/pixie/pixie/"
+ "/Users/brycecovert/dev/playground/pixie/pixie/vm/"
+ "/Users/brycecovert/dev/playground/pixie/"
+ "/Users/brycecovert/dev/playground/pixie/examples/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "servers.json"
+ "params.json"
+ "holds-table.json"
+ "master.json"
+ "actions.clj"
+ "core_listeners.clj"
+ "scene.clj"
+ "utils.clj"
+ "dialogue.clj"
+ "vector.clj"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/si/" (22599 22712 0 0) "servers.json" "rms-sqs.json" "rms-kinesis.json" "params.json" "master.json" "dynamo/" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/" (22599 22598 0 0) "test/" "staging/" "si/" "readme.md" "promote.py" "production/" "perf/" "develop/" "build.py" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/test/" (22599 22324 0 0) "servers.json" "rms-sqs.json" "rms-kinesis.json" "params.json" "master.json" "dynamo/" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-aws-infrastructure/build/test/dynamo/" (22599 21239 0 0) "summary-table.json" "sku-table.json" "processed-sequence-numbers-table.json" "inventory-table.json" "holds-table.json" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/src-common/advent/screens/" (22572 36770 0 0) "title.clj" "splash.clj" "scene.clj" "safe.clj" "rooms.clj" "rooms/" "items.clj" "inventory.clj" "fade.clj" "dialogue.clj" "credits.clj" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/" (22572 36107 0 0) "update_cursor.sh" "ticks_tales.log.4" "ticks_tales.log.3" "ticks_tales.log.2" "ticks_tales.log.1" "ticks_tales.log" "Tick's Tales.entitlements" "test.png" "target/" "steam_appid.txt" "src-dev/" "src-common/" "src/" "saves/" "resources/" "release.sh" "release-notes.md" "release-non-steam.sh" "release-app-store.sh" "project.clj" "pom.xml" "packr.jar" "npm-debug.log" "logs/" "last-release" "inv-todo.txt" "icons.icns" "hs_err_pid97493.log" "hs_err_pid88407.log" "hs_err_pid88144.log" "hs_err_pid8459.log" "hs_err_pid27477.log" "hs_err_pid16606.log" "hs_err_pid15762.log" "hs_err_pid13703.log" "go.sh" "gametodos.txt" "distribution.xml" "content-builder/" "checkouts/" "build-zip.sh" "build-windows.json" "build-osx.json" "build-linux-64.json" "build-linux-32.json" "build-app-store.sh" "boxart.png" "asset-work/" "achievement-ideas.txt" ".gitignore" ".DS_Store" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/src-common/advent/" (22572 36033 0 0) "zone.clj" "version.clj" "utils.clj" "tween.clj" "steam.clj" "screens/" "saves.clj" "pathfind.clj" "core.clj" "actions.clj" "../" "./")
+
+ ("/Users/brycecovert/dev/lambtada/src/lambtada/" (22536 56756 0 0) "core.clj" "app.clj" ".#vector.clj" "../" "./")
+
+ ("/Users/brycecovert/dev/lambtada/" (22536 25807 0 0) "test/" "target/" "src/" "resources/" "README.md" "project.clj" "npm-debug.log" "LICENSE" "doc/" ".nrepl-port" ".hgignore" ".gitignore" ".git/" ".DS_Store" "../" "./")
+
+ ("/Users/brycecovert/dev/lambtada/src/" (22306 61509 0 0) "lambtada/" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/src-common/advent/screens/rooms/" (22530 29509 0 0) "space.clj" "outside_jail.clj" "outside_house.clj" "outside_castle.clj" "inside_stash.clj" "inside_jail.clj" "inside_house.clj" "inside_castle.clj" "inside_cafeteria.clj" "inside_antique.clj" "held.clj" "ending.clj" "dream.clj" "common.clj" "cat_tree.clj" "castle_gate.clj" "behind_house.clj" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/src/play_clj/" (22445 58226 0 0) "utils.clj" "ui.clj" "repl.clj" "physics.clj" "math.clj" "g3d_physics.clj" "g3d.clj" "g2d_physics.clj" "g2d.clj" "entities.clj" "core_utils.clj" "core_listeners.clj" "core_graphics.clj" "core_cameras.clj" "core_basics.clj" "core.clj" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/src/" (21938 20755 0 0) "play_clj/" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/play-clj/" (22529 13948 0 0) "UNLICENSE" "TUTORIAL.md" "template/" "target/" "src-java/" "src/" "README.md" "project.clj" "pom.xml" "play-clj-0.4.5-BRYCE.jar" "lib/" "doclet/" ".gitignore" ".git/" ".DS_Store" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/checkouts/" (22530 17423 0 0) "tools.logging/" "play-clj/" ".DS_Store" "../" "./")
+
+ ("/Users/brycecovert/dev/advent/desktop/src-common/" (22169 54105 0 0) "advent/" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-client-api/app/api/dal/" (22492 13982 0 0) "upc.js" "store.js" "sku.js" "location.js" "inventory.js" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-client-api/app/api/controllers/" (22464 44608 0 0) "upc.js" "sqs.js" "sku.js" "locations.js" "inventory.js" "../" "./")
+
+ ("/Users/brycecovert/dev/liffft/inventory-client-api/app/api/services/" (22464 44608 0 0) "nordstrom-api.js" "../" "./")
+
+ ("/Users/brycecovert/Downloads/cocos2d-x-3.13.1/cocos/2d/" (22487 18056 0 0) "wp_8.1_props/" "winrt_8.1_props/" "win10_props/" "libcocos2d_win10/" "libcocos2d_8_1/" "libcocos2d.vcxproj.filters" "libcocos2d.vcxproj" "cocos2dx.props" "cocos2d_headers.props" "cocos2d.def" "CMakeLists.txt" "CCTweenFunction.h" "CCTweenFunction.cpp" "CCTransitionProgress.h" "CCTransitionProgress.cpp" "CCTransitionPageTurn.h" "CCTransitionPageTurn.cpp" "CCTransition.h" "CCTransition.cpp" "CCTMXXMLParser.h" "CCTMXXMLParser.cpp" "CCTMXTiledMap.h" "CCTMXTiledMap.cpp" "CCTMXObjectGroup.h" "CCTMXObjectGroup.cpp" "CCTMXLayer.h" "CCTMXLayer.cpp" "CCTileMapAtlas.h" "CCTileMapAtlas.cpp" "CCTextFieldTTF.h" "CCTextFieldTTF.cpp" "CCSpriteFrameCache.h" "CCSpriteFrameCache.cpp" "CCSpriteFrame.h" "CCSpriteFrame.cpp" "CCSpriteBatchNode.h" "CCSpriteBatchNode.cpp" "CCSprite.h" "CCSprite.cpp" "CCScene.h" "CCScene.cpp" "CCRenderTexture.h" "CCRenderTexture.cpp" "CCProtectedNode.h" "CCProtectedNode.cpp" "CCProgressTimer.h" "CCProgressTimer.cpp" "CCParticleSystemQuad.h" "CCParticleSystemQuad.cpp" "CCParticleSystem.h" "CCParticleSystem.cpp" "CCParticleExamples.h" "CCParticleExamples.cpp" "CCParticleBatchNode.h" "CCParticleBatchNode.cpp" "CCParallaxNode.h" "CCParallaxNode.cpp" "CCNodeGrid.h" "CCNodeGrid.cpp" "CCNode.h" "CCNode.cpp" "CCMotionStreak.h" "CCMotionStreak.cpp" "CCMenuItem.h" "CCMenuItem.cpp" "CCMenu.h" "CCMenu.cpp" "CCLight.h" "CCLight.cpp" "CCLayer.h" "CCLayer.cpp" "CCLabelTTF.h" "CCLabelTTF.cpp" "CCLabelTextFormatter.h" "CCLabelTextFormatter.cpp" "CCLabelBMFont.h" "CCLabelBMFont.cpp" "CCLabelAtlas.h" "CCLabelAtlas.cpp" "CCLabel.h" "CCLabel.cpp" "CCGrid.h" "CCGrid.cpp" "CCGrabber.h" "CCGrabber.cpp" "CCGLBufferedNode.h" "CCGLBufferedNode.cpp" "CCFontFreeType.h" "CCFontFreeType.cpp" "CCFontFNT.h" "CCFontFNT.cpp" "CCFontCharMap.h" "CCFontCharMap.cpp" "CCFontAtlasCache.h" "CCFontAtlasCache.cpp" "CCFontAtlas.h" "CCFontAtlas.cpp" "CCFont.h" "CCFont.cpp" "CCFastTMXTiledMap.h" "CCFastTMXTiledMap.cpp" "CCFastTMXLayer.h" "CCFastTMXLayer.cpp" "CCDrawNode.h" "CCDrawNode.cpp" "CCDrawingPrimitives.h" "CCDrawingPrimitives.cpp" "CCComponentContainer.h" "CCComponentContainer.cpp" "CCComponent.h" "CCComponent.cpp" "CCClippingRectangleNode.h" "CCClippingRectangleNode.cpp" "CCClippingNode.h" "CCClippingNode.cpp" "CCCameraBackgroundBrush.h" "CCCameraBackgroundBrush.cpp" "CCCamera.h" "CCCamera.cpp" "CCAutoPolygon.h" "CCAutoPolygon.cpp" "CCAtlasNode.h" "CCAtlasNode.cpp" "CCAnimationCache.h" "CCAnimationCache.cpp" "CCAnimation.h" "CCAnimation.cpp" "CCActionTween.h" "CCActionTween.cpp" "CCActionTiledGrid.h" "CCActionTiledGrid.cpp" "CCActionProgressTimer.h" "CCActionProgressTimer.cpp" "CCActionPageTurn3D.h" "CCActionPageTurn3D.cpp" "CCActionManager.h" "CCActionManager.cpp" "CCActionInterval.h" "CCActionInterval.cpp" "CCActionInstant.h" "CCActionInstant.cpp" "CCActionGrid3D.h" "CCActionGrid3D.cpp" "CCActionGrid.h" "CCActionGrid.cpp" "CCActionEase.h" "CCActionEase.cpp" "CCActionCatmullRom.h" "CCActionCatmullRom.cpp" "CCActionCamera.h" "CCActionCamera.cpp" "CCAction.h" "CCAction.cpp" "../" "./")
+
+ ("/Users/brycecovert/Downloads/cocos2d-x-3.13.1/" (22487 18074 0 0) "web/" "tools/" "tests/" "templates/" "setup.py" "README.md" "README.cmake" "plugin/" "licenses/" "issue_template.md" "external/" "extensions/" "download-deps.py" "docs/" "CONTRIBUTING.md" "cocos/" "CMakeLists.txt" "cmake/" "CHANGELOG" "build/" "AUTHORS" ".travis.yml" ".gitmodules" ".gitignore" ".gitattributes" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/bewitch/src/bewitch/" (22511 15718 0 0) "natives.pxi" "core.pxi" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/bewitch/src/" (22511 15721 0 0) "bewitch/" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/bewitch/examples/" (22511 17264 0 0) "windows.pxi" "minimal.pxi" "color.pxi" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/bewitch/" (22511 16593 0 0) "src/" "project.edn" "examples/" "deps/" ".load-path" ".git/" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/" (22511 16022 0 0) "xbrzscale/" "word-counter/" "webvisuals/" "update-dates/" "tutorial-2d-game-unity/" "tryparts" "tryparticles3.png" "tryparticles2.png" "tryparticles" "transient-v-persistent-memory/" "trail-js/" "touchstonejs-starter/" "tips/" "thebackupawakens.zip" "testparticles" "testchaining/" "test-stdout/" "test-hello/" "test-fullscreen/" "test-app/" "steamworks4j/" "SteamExample/" "statstest/" "simulation-grooy/" "simple-pathfind/" "shellattach/" "seatr-server/" "seatr/" "scripting/" "script-tests/" "scilter/" "rxscript/" "rust/" "robovm/" "record-test/" "reagent-cookbook/" "reagent/" "pixie/" "person-service/" "pdfboxing/" "packr/" "overlap2d/" "openjdk-trim/" "nitpick/" "next-game-notes.txt" "my-project/" "multi/" "monopoly-lottery/" "monads/" "matches.txt" "matchbox/" "lwjgl3/" "lwjgl/" "lightning2.png" "lightning.png" "libgdxplayground/" "libgdx/" "lein-skummet/" "lein-fruit/" "lein-droid/" "kinesis-test/" "javascript-example/" "generator-test/" "gchisto/" "express-test-middleware/" "dust/" "droidtest/" "CoverageShader_Src/" "ContentBuilderExample/" "CollisionEditor/" "clj17/" "bitcoinidea/" "bitcoin-arbitrage/" "bewitch-example/" "bewitch/" ".DS_Store" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/pixie/" (22511 14944 0 0) "tests/" "target.pyc" "target.py" "run-tests.pxi" "README.md" "pixie-vm" "pixie/" "Makefile" "lib_pixie.py" "lib/" "include/" "generate-docs.pxi" "find_externals_name.py" "externals.fetched" "externals/" "examples/" "Dockerfile" "COPYING.LESSER" "COPYING" "benchmarks/" ".travis.yml" ".gitignore" ".git/" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/pixie/pixie/" (22510 28766 0 0) "walk.pxi" "vm/" "uv.pxic" "uv.pxi" "time.pxi" "test.pxi" "system.pxi" "string.pxi" "streams.pxi" "streams/" "stdlib.pxic" "stdlib.pxi" "stacklets.pxic" "stacklets.pxi" "set.pxi" "repl.pxic" "repl.pxi" "PixieChecker.hpp" "parser.pxi" "parser/" "math.pxi" "lib_pixie.py" "io.pxic" "io.pxi" "io-blocking.pxi" "io/" "fs.pxi" "ffi-infer.pxi" "data/" "csp.pxi" "channels.pxi" "buffers.pxi" "async.pxi" "__init__.pyc" "__init__.py" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/pixie/pixie/vm/" (22507 58041 0 0) "util.pyc" "util.py" "threads.pyc" "threads.py" "test/" "symbol.pyc" "symbol.py" "string_builder.pyc" "string_builder.py" "string.pyc" "string.py" "stdlib.pyc" "stdlib.py" "stacklet.pyc" "stacklet.py" "rt.pyc" "rt.py" "reduced.pyc" "reduced.py" "reader.pyc" "reader.py" "primitives.pyc" "primitives.py" "persistent_vector.pyc" "persistent_vector.py" "persistent_list.pyc" "persistent_list.py" "persistent_hash_set.pyc" "persistent_hash_set.py" "persistent_hash_map.pyc" "persistent_hash_map.py" "object.pyc" "object.py" "numbers.pyc" "numbers.py" "map_entry.pyc" "map_entry.py" "libs/" "lazy_seq.pyc" "lazy_seq.py" "keyword.pyc" "keyword.py" "interpreter.pyc" "interpreter.py" "custom_types.pyc" "custom_types.py" "cons.pyc" "cons.py" "compiler.pyc" "compiler.py" "code.pyc" "code.py" "c_api.pyc" "c_api.py" "bootstrap.pyc" "bootstrap.py" "bits.pyc" "bits.py" "atom.pyc" "atom.py" "array.pyc" "array.py" "__init__.pyc" "__init__.py" "../" "./")
+
+ ("/Users/brycecovert/dev/playground/pixie/examples/" (22511 13587 0 0) "tty-io-test.pxi" "try-catch.pxi" "ncurses.pxic" "ncurses.pxi" "mu-kanren.pxi" "mandelbrot.pxi" "hello-world.pxi" "gen-docs.pxi" "bewitch.pxi" "bewitch-natives.pxi" "../" "./")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t

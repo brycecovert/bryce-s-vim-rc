@@ -1,5 +1,0 @@
-{:reports [{:report-name :sws}
-           {:report-name :pso}
-           {:report-name :tdo :driver-count 9}
-           {:report-name :tdo :driver-count nil :sort-order [:driver-name :driver-value]}]
-  :email-to ["" "david.pooler@starwood.com"]}

@@ -1,7 +1,0 @@
-(ns command-line-args.core-test
-  (:require [clojure.test :refer :all]
-            [command-line-args.core :refer :all]))
-
-(deftest pairs-of-values
-  (testing "FIXME, I fail."
-    (is (= 0 1))))

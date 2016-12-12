@@ -1,7 +1,0 @@
-(defn tabs [app owner]
-  (let [current-tab (:current-tab (get-state owner))]
-    (dom/ul #js {:className "nav nav-tabs" :role "tablist"}
-            (dom/li (when ) #js {:className "active"}
-                    (dom/a #js {:href "#/run-profile"} "Run a report bundle"))
-            (dom/li nil
-                    (dom/a #js {:href "#/run-adhoc-report "} "Run an adhoc report")))))

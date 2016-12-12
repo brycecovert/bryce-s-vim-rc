@@ -1,11 +1,11 @@
 ;;; starter-kit-lisp-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (car load-path))))
 
-;;;### (autoloads nil "starter-kit-lisp" "starter-kit-lisp.el" (21260
-;;;;;;  60847 0 0))
-;;; Generated autoloads from starter-kit-lisp.el
+;;;### (autoloads nil "starter-kit-lisp" "../../../../../.emacs.d/elpa/starter-kit-lisp-2.0.3/starter-kit-lisp.el"
+;;;;;;  "36a6a0544e78f91d1fe2c04bd8277930")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/starter-kit-lisp-2.0.3/starter-kit-lisp.el
 
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 
@@ -37,16 +37,15 @@ Face used to dim parentheses." :group (quote starter-kit-faces))
 
 ;;;***
 
-;;;### (autoloads nil nil ("starter-kit-lisp-pkg.el") (21260 60847
-;;;;;;  537907 0))
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/starter-kit-lisp-2.0.3/starter-kit-lisp-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/starter-kit-lisp-2.0.3/starter-kit-lisp.el")
+;;;;;;  (22509 26379 0 0))
 
 ;;;***
 
-(provide 'starter-kit-lisp-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
-;; coding: utf-8
 ;; End:
 ;;; starter-kit-lisp-autoloads.el ends here

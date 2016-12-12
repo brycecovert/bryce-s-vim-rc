@@ -1,46 +1,46 @@
 
 ;; ----- smex-history -----
 (
- cider-jack-in
  paredit-mode
- previous-buffer
- backtrace
- linum-mode
- line-number-mode
+ package-install
+ package-refresh-contents
  rgrep
+ next-match
+ linum-mode
+ toggle-truncate-lines
 )
 
 ;; ----- smex-data -----
 (
- (cider-jack-in . 106)
+ (cider-jack-in . 203)
  (paredit-forward-slurp-sexp . 3)
- (package-install . 1)
- (revert-buffer . 2)
+ (package-install . 13)
+ (revert-buffer . 3)
  (describe-key . 4)
  (evil-mode . 46)
- (linum-mode . 4)
+ (linum-mode . 10)
  (clipboard-yank . 1)
  (dired . 3)
  (clojure-test-mode . 11)
  (mark-whole-buffer . 1)
- (clj-scratch . 1)
+ (clj-scratch . 2)
  (cider-eval-expression-at-point-in-repl . 1)
  (paredit-forward-barf-sexp . 3)
- (paredit-mode . 13)
+ (paredit-mode . 20)
  (undo . 1)
  (undo-tree-mode . 1)
- (cider . 27)
- (cider-quit . 40)
- (cider-mode . 2)
+ (cider . 476)
+ (cider-quit . 120)
+ (cider-mode . 3)
  (ack . 3)
- (rgrep . 39)
- (make-directory . 5)
+ (rgrep . 140)
+ (make-directory . 6)
  (clojure-test-run-tests . 60)
  (toggle-truncate-lines . 7)
  (clojure-mode-display-version . 1)
  (global-set-key . 3)
  (cider-jump . 3)
- (next-match . 32)
+ (next-match . 84)
  (magit-status . 1)
  (vc-annotate . 2)
  (find-tag . 1)
@@ -53,4 +53,37 @@
  (line-number-mode . 2)
  (backtrace . 1)
  (previous-buffer . 3)
+ (highlight-lines-matching-regexp . 1)
+ (global-hl-line-mode . 2)
+ (clojure-mode . 22)
+ (cider-repl-clear-buffer . 2)
+ (ido-prev-match . 1)
+ (rename-file . 2)
+ (package-menu-refresh . 1)
+ (package-refresh-contents . 12)
+ (package-menu-mode . 4)
+ (package-list-packages . 1)
+ (set-variable . 4)
+ (fundamental-mode . 1)
+ (javascript-mode . 2)
+ (shell . 2)
+ (web-mode . 4)
+ (js2-mode . 2)
+ (css-mode . 2)
+ (package-menu-mark-delete . 1)
+ (package-menu-execute . 1)
+ (list-packages . 4)
+ (org-goto . 1)
+ (text-mode . 1)
+ (org-mode . 1)
+ (org-show-entry . 37)
+ (help . 2)
+ (grep . 1)
+ (redraw-display . 1)
+ (cider-version . 1)
+ (clojure-align . 1)
+ (cider-format-buffer . 2)
+ (cider-format-edn-region . 3)
+ (cider-format-defun . 1)
+ (cider-connect . 23)
 )
